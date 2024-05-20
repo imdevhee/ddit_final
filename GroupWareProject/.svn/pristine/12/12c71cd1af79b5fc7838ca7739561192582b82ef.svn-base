@@ -1,0 +1,358 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<style>
+.imgPreview img {
+    width: 100%; /* 이미지의 너비를 imgPreview의 너비에 맞춤 */
+    height: auto; /* 높이를 자동으로 조정하여 비율을 유지 */
+    object-fit: contain; /* 이미지가 컨테이너에 맞게 조절되도록 설정 */
+    max-height: 400px; /* 모달창의 크기에 맞게 최대 높이 설정 */
+}
+</style>
+
+<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
+	<div class="card-body px-4 py-3">
+		<div class="row align-items-center">
+			<div class="col-9">
+				<h4 class="fw-semibold mb-8">Notes</h4>
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a class="text-muted text-decoration-none" href="../main/index.html">Home</a></li>
+						<li class="breadcrumb-item" aria-current="page">Notes</li>
+					</ol>
+				</nav>
+			</div>
+			<div class="col-3">
+				<div class="text-center mb-n5">
+					<img src="${pageContext.request.contextPath}/resources/vendor/images/breadcrumb/ChatBc.png" alt="" class="img-fluid mb-n4" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ul class="nav nav-pills p-3 mb-3 rounded align-items-center card flex-row">
+	<li class="nav-item"><a href="javascript:void(0)" class="
+                      nav-link
+                     gap-6
+                      note-link
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      active
+                      px-3 px-md-3
+                      me-0 me-md-2 text-body-color
+                    " id="all-category">
+			<i class="ti ti-list fill-white"></i> <span class="d-none d-md-block font-weight-medium">All Notes</span>
+		</a></li>
+	<li class="nav-item"><a href="javascript:void(0)" class="
+                      nav-link
+                    gap-6
+                      note-link
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      px-3 px-md-3
+                      me-0 me-md-2 text-body-color
+                    " id="note-business">
+			<i class="ti ti-briefcase fill-white"></i> <span class="d-none d-md-block font-weight-medium">Business</span>
+		</a></li>
+	<li class="nav-item"><a href="javascript:void(0)" class="
+                      nav-link
+                    gap-6
+                      note-link
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      px-3 px-md-3
+                      me-0 me-md-2 text-body-color
+                    " id="note-social">
+			<i class="ti ti-share fill-white"></i> <span class="d-none d-md-block font-weight-medium">Social</span>
+		</a></li>
+	<li class="nav-item"><a href="javascript:void(0)" class="
+                      nav-link
+                    gap-6
+                      note-link
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      px-3 px-md-3
+                      me-0 me-md-2 text-body-color
+                    " id="note-important">
+			<i class="ti ti-star fill-white"></i> <span class="d-none d-md-block font-weight-medium">Important</span>
+		</a></li>
+	<li class="nav-item ms-auto"><a href="javascript:void(0)" class="btn btn-primary d-flex align-items-center px-3 gap-6" id="add-notes">
+			<i class="ti ti-file fs-4"></i> <span class="d-none d-md-block font-weight-medium fs-3">Add Notes</span>
+		</a></li>
+</ul>
+
+<div class="tab-content">
+	<div id="note-full-container" class="note-has-grid row">
+ 		
+			<!--카드동적생성  -->
+	</div>
+</div>
+<!-- Modal Add notes -->
+<div class="modal fade" id="addnotesmodal" tabindex="-1" role="dialog" aria-labelledby="addnotesmodalTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content border-0">
+			<div class="modal-header bg-primary rounded-top">
+				<h6 class="modal-title text-white">Add Notes</h6>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="notes-box">
+					<div class="notes-content">
+						<form action="javascript:void(0);" id="addForm"  enctype="multipart/form-data" method="post">
+							<div class="row">
+								<div class="col-md-12 mb-3">
+									<div class="note-title">
+										<label class="form-label">Note Title</label>
+										<input type="text" id="note-has-title" name="memoNm" class="form-control" minlength="25" placeholder="Title" />
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="note-description">
+										<label class="form-label">Note Description</label>
+										<textarea id="note-has-description" name="memoCn" class="form-control" minlength="60" placeholder="Description" rows="3"></textarea>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="note-images">
+										<input type="file" class="custom-file-input" id="note-has-imgFile" name = "imgFile" >
+									</div>
+									<div class="imgPreview">
+									</div>
+									<div class="file-input-alert" style="display: none; color: red; margin-top: 10px;">img파일을 선택해주세요.</div>
+								</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="d-flex gap-6">
+					<button class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Discard</button>
+					<button id="btn-n-add" class="btn btn-primary" disabled>Add</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+  <!-- ------------------------------------------ -->
+    <!-- detailnotesmodal -->
+    <!-- ------------------------------------------ -->
+  <div class="modal fade" id="detailnotesmodal" tabindex="-1" role="dialog" aria-labelledby="detailnotesmodalTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content border-0">
+			<div class="modal-header bg-primary rounded-top">
+				<h6 class="modal-title text-white">Detail Note</h6>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="notes-box">
+					<div class="notes-content">
+						
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="d-flex gap-6">
+					<button class="btn bg-danger-subtle text-danger" data-bs-dismiss="modal">Discard</button>
+					<button id="btn-n-modify" class="btn btn-primary" disabled>modify</button>
+					<button id="btn-n-delete" class="btn btn-primary" disabled>delete</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-3.7.1.js"
+  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+	   
+	
+	var alertDiv = document.querySelector('.file-input-alert');
+	
+    // 'Add Note' 버튼 클릭 이벤트 - 모달창 초기화 및 표시
+    document.getElementById('add-notes').addEventListener('click', function () {
+        resetModal();
+        $('#addnotesmodal').modal('show');
+    });
+
+    // 'Discard' 버튼 클릭 이벤트 - 모달창 초기화
+    document.querySelectorAll('.btn.bg-danger-subtle').forEach(function(button) {
+        button.addEventListener('click', function () {
+            resetModal();
+        });
+    });
+
+    // 모달창 초기화 함수
+    function resetModal() {
+        document.getElementById('addForm').reset();
+        var imgPreview = document.querySelector('.imgPreview');
+        imgPreview.innerHTML = ''; // 이미지 프리뷰 초기화
+        alertDiv.style.display = 'none'; // 리셋 시 경고 메시지 숨김
+        document.getElementById('btn-n-add').disabled = true;
+       
+    }
+
+    // 이미지 파일 선택 및 썸네일 표시 로직
+    document.getElementById('note-has-imgFile').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        var imgPreview = document.querySelector('.imgPreview');
+        imgPreview.innerHTML = '';  // 기존 썸네일 제거
+
+        if (file && file.type.match('image.*')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var imgElement = document.createElement('img');
+                imgElement.src = e.target.result;
+                imgPreview.appendChild(imgElement); // CSS 스타일이 자동으로 적용됨
+                document.getElementById('btn-n-add').disabled = false;
+                alertDiv.style.display = 'none';// 이미지가 유효하면 경고 숨김
+            };
+            reader.readAsDataURL(file);
+        }else {
+			 alertDiv.style.display = 'block'; // 경고 표시
+            this.value = '';  // 파일 입력 필드 초기화
+        }
+    });
+    
+ // 페이지 로드 시 한 번만 이벤트 핸들러를 등록
+    $(document).ready(function() {
+        // 중복 등록을 방지하기 위해 기존의 이벤트 핸들러를 제거
+        $('#btn-n-add').off('click').on('click', function(event) {
+            event.preventDefault();
+            addNote();
+        });
+    });
+
+    function addNote() {
+        var formData = new FormData(document.getElementById('addForm'));
+
+        $.ajax({
+            url: '/addNote',
+            type: 'POST',
+            data: formData,
+            beforeSend : function(xhr) {
+ 				xhr.setRequestHeader(header, token);
+ 			 },
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if (data.status === 'success') {
+                    // 페이지에 데이터를 추가 전에 중복 체크
+                    if ($('#note-full-container').find(`div[data-note-id="${data.memoNo}"]`).length === 0) {
+                        addNoteToPage(data);
+                    }
+                    $('#addnotesmodal').modal('hide');
+                } else {
+                    console.error('Add Note Failed:', data.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+    var titleInput = document.getElementById('note-has-title');
+    var descriptionInput = document.getElementById('note-has-description');
+    var addButton = document.getElementById('btn-n-add');
+
+    // 'Note Title'과 'Note Description' 입력 필드의 내용을 확인하여
+    // 둘 다 비어 있지 않은 경우에만 'Add' 버튼을 활성화하는 함수
+    function updateButtonState() {
+        var isTitleEmpty = titleInput.value.trim() === "";
+        var isDescriptionEmpty = descriptionInput.value.trim() === "";
+        addButton.disabled = isTitleEmpty || isDescriptionEmpty;
+    }
+
+    // 'Note Title' 입력 필드에 대한 'keyup' 이벤트 리스너 추가
+    titleInput.addEventListener('keyup', updateButtonState);
+
+    // 'Note Description' 입력 필드에 대한 'keyup' 이벤트 리스너 추가
+    descriptionInput.addEventListener('keyup', updateButtonState);
+});
+
+/*노트리스트 상세보기 로드  */
+$(document).ready(function() {
+    
+    loadNotes(); // 페이지가 준비되면 노트 리스트를 로드합니다.
+});
+//노트 리스트 가져오기
+function loadNotes() {
+    $.ajax({
+        url: '/getNotes', // 서버의 노트 데이터 리스트를 제공하는 엔드포인트
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(header, token);
+        },
+        success: function(data) {
+            $('#note-full-container').empty(); // 기존에 노트 컨테이너를 비웁니다.
+//             data.forEach(note => addNoteToPage(note)); // 각 노트 데이터에 대해 addNoteToPage 함수를 호출합니다.
+       		for(let i = 0; i<data.length; i++){
+       			let note = data[i];
+       			addNoteToPage(note);
+       		}
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading notes: ', error);
+        }
+    });
+}
+
+function addNoteToPage(data) {
+	 // 중복 체크
+    if ($('#note-full-container').find(`div[data-note-id="${data.memoNo}"]`).length > 0) {
+        return; // 이미 존재하면 추가하지 않음
+    }
+	 console.log("데이터 나옴?",data);
+    var imageUrl = `/displayFile?path=\${data.imgFilePath}`;
+    var imageTag = `<img src="\${imageUrl}" alt="Note Image" style="max-width:100%; height:auto;">`;
+
+    // 동적으로 HTML을 구성합니다.
+    var newNoteHTML = `
+        <div class="col-md-4 single-note-item all-category" data-note-id="\${data.memoNo}">
+            <div class="card card-body">
+                <h6 class="note-title text-truncate w-75 mb-0">\${data.memoNm}</h6>
+                <div class="note-content">
+                    <p class="note-inner-content">\${data.memoCn}</p>
+                </div>
+                \${imageTag} 
+            </div>
+            <div class="d-flex align-items-center">
+            <a href="javascript:void(0)" class="link me-1" data-note-id="\${data.memoNo}">
+                <i class="ti ti-star fs-4 favourite-note"></i>
+            </a>
+            <a href="javascript:void(0)" class="link text-danger ms-2" data-note-id="\${data.memoNo}">
+                <i class="ti ti-trash fs-4 remove-note"></i>
+            </a>
+        </div>
+		</div>`;
+
+    // 생성된 HTML 문자열을 페이지의 특정 컨테이너에추가
+    $('#note-full-container').append(newNoteHTML);
+}
+
+
+	$('#note-full-container').on('click', '.single-note-item', function() {
+        var noteId = $(this).data('note-id'); // data-note-id 속성 값 가져오기
+         console.log('Clicked note ID:', noteId); // 콘솔에 noteId 출력
+        showModal(noteId); // 모달 표시 함수 호출
+    });
+	function showModal(noteId) {
+	    console.log('showModal function called with noteId:', noteId); // 함수 호출과 noteId 출력
+	    $('#detailnotesmodal').modal('show'); // Bootstrap의 모달 표시 함수
+	}
+
+
+</script>
+
+<%-- <script src="${pageContext.request.contextPath}/resources/vendor/libs/fullcalendar/index.global.min.js"></script>  --%>
+

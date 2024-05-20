@@ -1,0 +1,190 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/project/css/project/main.css" />
+<div class="prjct-content">
+	<div class="col-yen-15">
+		<div class="nav flex-column nav-pills mb-4 mb-md-0" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+			<a class="nav-link" id="v-pills-home-tab" data-bs-toggle="pill" href="javascript:void(0);" onclick="moveToFormPage();" role="tab" aria-controls="v-pills-home" aria-selected="false">
+				<i class="fa-solid fa-plus"></i> 새 프로젝트
+			</a>
+			<br />
+			<div class="nav-link">
+				<i class="fa-duotone fa-users" style="margin-right: 10px;"></i> 내 프로젝트
+			</div>
+			<div class="myPrjct">
+				<c:forEach var="project" items="${prjctList }">
+					<div class="btn-prjct">
+						<span class="side-stick yen-${project.prjctColorCode }"></span>
+						<a class="nav-link" id="v-pills-my-tab" data-bs-toggle="pill" href="javascript:void(0);" onclick="moveToProjectMain(${project.prjctNo});" role="tab" aria-controls="v-pills-profile" aria-selected="false"> ${project.prjctNm } </a>
+					</div>
+				</c:forEach>
+			</div>
+		</div>
+	</div>
+	<div class="col-yen-85">
+		<ul class="nav nav-underline prjct-tab" id="myTab" role="tablist">
+			<li class="nav-item" role="presentation">
+				<a class="nav-link active" id="prjct-home-tab" data-bs-toggle="tab" href="#prjct-home" role="tab" aria-controls="prjct-home" aria-expanded="true" aria-selected="false" tabindex="-1">
+					<span>홈</span>
+				</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="prjct-task-tab" data-bs-toggle="tab" href="#prjct-task" role="tab" aria-controls="prjct-task" aria-selected="false" tabindex="-1">
+					<span>업무</span>
+				</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="prjct-gantt-tab" data-bs-toggle="tab" href="#prjct-gantt" role="tab" aria-controls="prjct-gantt" aria-selected="true">
+					<span>간트차트</span>
+				</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="prjct-cal-tab" data-bs-toggle="tab" href="#prjct-cal" role="tab" aria-controls="prjct-cal" aria-selected="true">
+					<span>캘린더</span>
+				</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="prjct-report-tab" data-bs-toggle="tab" href="#prjct-report" role="tab" aria-controls="prjct-report" aria-selected="true">
+					<span>업무일지</span>
+				</a>
+			</li>
+		</ul>
+		<div class="tab-content tabcontent-border p-3" id="myTabContent">
+			<!-- 홈 탭 -->
+			<div role="tabpanel" class="tab-pane fade active show" id="prjct-home" aria-labelledby="prjct-home-tab">
+				<div class="row">
+					<!-- 세로줄 1 -->
+					<div class="col-yen-25">
+						<!-- 업무 상태 -->
+						<div class="card w-100">
+							<div class="card-body">
+								<div>
+									<h4 class="card-title fw-semibold mb-1">업무 상태</h4>
+									<p class="card-subtitle">Every month</p>
+									<canvas id="task-status-chart" width="250" height="250"></canvas>
+									<div class="col">
+										<span class="mb-1 badge yen-red">대기</span>
+										<span class="mb-1 badge yen-blue">진행 중</span>
+										<span class="mb-1 badge yen-yellow">완료</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- / 업무 상태 -->
+						<!-- 업무기한 -->
+						<div class="card w-100">
+							<div class="card-body">
+								<div>
+									<h4 class="card-title fw-semibold mb-1">업무 기한</h4>
+									<p class="card-subtitle">Every month</p>
+									<div id="salary" class="mb-7 pb-8 mx-n4" style="min-height: 275px;">
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /업무기한 -->
+					</div>
+					<!-- /세로줄 1 -->
+					<!-- 세로줄2 -->
+					<div class="col-yen-45">
+						<!-- 캘린더 -->
+						<div class="card w-100">
+							<div class="card-body"></div>
+						</div>
+						<!-- / 캘린더 -->
+					</div>
+					<!-- /세로줄2 -->
+					<!-- 세로줄3 -->
+					<div class="col-yen-25">
+						<!-- 참여자 -->
+						<div class="card w-100">
+							<div class="card-body">
+								<h5 class="card-title fw-semibold">구성원</h5>
+								<p class="card-subtitle">프로젝트 책임자</p>
+								<div class="mt-9 py-6 d-flex align-items-center">
+									<img src="../assets/images/profile/user-5.jpg" class="rounded-circle" alt="user" width="40">
+									<div class="ms-3">
+										<h6 class="mb-0 fw-semibold">권예은 상무</h6>
+										<span class="fs-3">본부</span>
+									</div>
+									<div class="ms-auto">
+										<i class="fa-sharp fa-regular fa-comment"></i>
+									</div>
+								</div>
+								<div class="py-6 d-flex align-items-center">
+									<div class="flex-shrink-0 bg-danger-subtle text-danger rounded-circle round d-flex align-items-center justify-content-center">
+										<i class="ti ti-bookmark fs-6"></i>
+									</div>
+									<div class="ms-3">
+										<h6 class="mb-0 fw-semibold">Archived Data</h6>
+										<span class="fs-3">working on</span>
+									</div>
+									<div class="ms-auto">
+										<span class="fs-2">3:52 PM</span>
+									</div>
+								</div>
+								<div class="py-6 d-flex align-items-center">
+									<div class="flex-shrink-0 bg-success-subtle text-success rounded-circle round d-flex align-items-center justify-content-center">
+										<i class="ti ti-microphone fs-6"></i>
+									</div>
+									<div class="ms-3">
+										<h6 class="mb-0 fw-semibold">Meeting with Client</h6>
+										<span class="fs-3">working on</span>
+									</div>
+									<div class="ms-auto">
+										<span class="fs-2">4:50 PM</span>
+									</div>
+								</div>
+								<div class="py-6 d-flex align-items-center">
+									<div class="flex-shrink-0 bg-warning-subtle text-warning rounded-circle round d-flex align-items-center justify-content-center">
+										<i class="ti ti-cast fs-6"></i>
+									</div>
+									<div class="ms-3">
+										<h6 class="mb-0 fw-semibold ">Screening Task Team</h6>
+										<span class="fs-3">working on</span>
+									</div>
+									<div class="ms-auto">
+										<span class="fs-2">5:10 PM</span>
+									</div>
+								</div>
+								<div class="pt-6 d-flex align-items-center">
+									<div class="flex-shrink-0 bg-info-subtle text-info rounded-circle round d-flex align-items-center justify-content-center">
+										<i class="ti ti-mail fs-6"></i>
+									</div>
+									<div class="ms-3">
+										<h6 class="mb-0 fw-semibold">Send envelope to John</h6>
+										<span class="fs-3">working on</span>
+									</div>
+									<div class="ms-auto">
+										<span class="fs-2">6:00 PM</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /참여자 -->
+					</div>
+					<!-- /세로줄3 -->
+				</div>
+			</div>
+			<!-- /홈탭 -->
+			<div class="tab-pane fade" id="prjct-task" role="tabpanel" aria-labelledby="prjct-task-tab">
+				<p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park.</p>
+			</div>
+			<div class="tab-pane fade" id="prjct-gantt" role="tabpanel" aria-labelledby="prjct-gantt-tab">
+				<p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</p>
+			</div>
+			<div class="tab-pane fade" id="prjct-cal" role="tabpanel" aria-labelledby="prjct-cal-tab">
+				<p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</p>
+			</div>
+			<div class="tab-pane fade" id="prjct-report" role="tabpanel" aria-labelledby="prjct-report-tab">
+				<p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth chambray yr.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Import Js Files -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.36.0/apexcharts.min.js"></script> -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script src="${pageContext.request.contextPath }/resources/vendor/libs/apexcharts/dist/apexcharts.min.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/project/project_main.js"></script>

@@ -1,0 +1,28 @@
+package kr.or.ddit.groupware.mapper.board;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.BoardVO;
+
+/**
+ * 게시판 SQL Mapper
+ * @author 최윤서
+ * @version 1.0
+ * @see IBoardMapper
+ */
+public interface IBoardMapper {
+
+	public List<BoardVO> selectBoardList();
+
+	public BoardVO selectBoard(int bbscttNo);
+
+	public void insert(BoardVO boardVO);
+
+	public int insertBoard(BoardVO boardVO);
+
+	public int updateBoard(BoardVO boardVO);
+
+	public int deleteBoard(int bbscttNo);
+
+}

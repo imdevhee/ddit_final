@@ -1,0 +1,214 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<div class="container-fluid">
+	<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
+		<div class="card-body px-4 py-3">
+			<div class="row align-items-center">
+				<div class="col-9">
+					<h4 class="fw-semibold mb-8">Contact</h4>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a class="text-muted text-decoration-none" href="../main/index.html">Home</a></li>
+							<li class="breadcrumb-item" aria-current="page">Contact</li>
+						</ol>
+					</nav>
+				</div>
+				<div class="col-3">
+					<div class="text-center mb-n5">
+						<img src="${pageContext.request.contextPath}/resources/vendor/images/breadcrumb/ChatBc.png" alt="" class="img-fluid mb-n4" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="d-flex w-100">
+		<div class="left-part border-end w-20 flex-shrink-0 d-none d-lg-block">
+		<div class="px-9 pt-4 pb-3">
+			<a href="javascript:void(0)" id="btn-add-contact" class="btn btn-primary fw-semibold py-8 w-100">
+				<i class="ti ti-users text-white me-1 fs-5"></i> 연락처 추가
+			</a>
+			</div>
+			
+			<ul class="list-group mh-n100" data-simplebar>
+				<li class="fw-semibold text-dark text-uppercase mx-9 my-2 px-3 fs-2">개인 주소록</li>
+				<li class="list-group-item border-0 p-0 mx-9"><a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-8 mb-1 rounded-1" href="javascript:void(0)">
+						<i class="ti ti-bookmark fs-5 text-primary"></i>전체 주소록
+					</a></li>
+				<li class="list-group-item border-0 p-0 mx-9"><a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-8 mb-1 rounded-1" href="javascript:void(0)">
+						<i class="ti ti-star"></i>추가할 주소록
+					</a></li>
+				<li class="fw-semibold text-dark text-uppercase mx-9 my-2 px-3 fs-2">사내주소록</li>
+				<li class="list-group-item border-0 p-0 mx-9"><a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-8 mb-1 rounded-1" href="javascript:void(0)">
+						<i class="ti ti-bookmark fs-5 text-primary"></i>전체주소록
+					</a></li>
+				<li class="fw-semibold text-dark text-uppercase mx-9 my-2 px-3 fs-2">부서주소록</li>
+				<li class="list-group-item border-0 p-0 mx-9"><a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-8 mb-1 rounded-1" href="javascript:void(0)">
+						<i class="ti ti-bookmark fs-5 text-primary"></i>개발팀
+					</a></li>
+
+			</ul>
+		</div>
+		<div class="widget-content searchable-container list">
+			<div class="card card-body">
+				<div class="row">
+					<div class="col-md-4 col-xl-3">
+						<form class="position-relative">
+							<input type="text" class="form-control product-search ps-5" id="input-search" placeholder="Search Contacts..." />
+							<i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+						</form>
+					</div>
+					<div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
+						<div class="action-btn show-btn">
+							<a href="javascript:void(0)" class="delete-multiple bg-danger-subtle btn me-2 text-danger d-flex align-items-center ">
+								<i class="ti ti-trash text-danger me-1 fs-5"></i> Delete All Row
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Modal -->
+			<div class="modal fade" id="addContactModal" tabindex="-1" role="dialog" aria-labelledby="addContactModalTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header d-flex align-items-center">
+							<h5 class="modal-title">Contact</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="add-contact-box">
+								<div class="add-contact-content">
+									<form id="addContactModalTitle">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="mb-3 contact-name">
+													<input type="text" id="c-name" class="form-control" placeholder="Name" />
+													<span class="validation-text text-danger"></span>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="mb-3 contact-email">
+													<input type="text" id="c-email" class="form-control" placeholder="Email" />
+													<span class="validation-text text-danger"></span>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-6">
+												<div class="mb-3 contact-occupation">
+													<input type="text" id="c-occupation" class="form-control" placeholder="Occupation" />
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="mb-3 contact-phone">
+													<input type="text" id="c-phone" class="form-control" placeholder="Phone" />
+													<span class="validation-text text-danger"></span>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="mb-3 contact-location">
+													<input type="text" id="c-location" class="form-control" placeholder="Location" />
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<div class="d-flex gap-6 m-0">
+								<button id="btn-add" class="btn btn-success rounded-pill">Add</button>
+								<button id="btn-edit" class="btn btn-success rounded-pill">Save</button>
+								<button class="btn bg-danger-subtle text-danger rounded-pill" data-bs-dismiss="modal">Discard</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card card-body">
+				<div class="table-responsive">
+					<table class="table search-table align-middle text-nowrap">
+						<thead class="header-item">
+							<th>
+								<div class="n-chk align-self-center text-center">
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input primary" id="contact-check-all" />
+										<label class="form-check-label" for="contact-check-all"></label> <span class="new-control-indicator"></span>
+									</div>
+								</div>
+							</th>
+							<th>이름</th>
+							<th>회사</th>
+							<th>부서</th>
+							<th>직위</th>
+							<th>이메일</th>
+							<th>휴대폰</th>
+							<th>메모</th>
+<!-- 						<th>Action</th> -->
+						</thead>
+						<tbody>
+							<!-- start row -->
+							<tr class="search-items">
+								<td>
+									<div class="n-chk align-self-center text-center">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input contact-chkbox primary" id="checkbox1" />
+											<label class="form-check-label" for="checkbox1"></label>
+										</div>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<img src="${pageContext.request.contextPath}/resources/vendor/images/profile/user-2.jpg" alt="avatar" class="rounded-circle" width="35" />
+										<div class="ms-3">
+											<div class="user-meta-info">
+												<h6 class="user-name mb-0" data-name="Emma Adams">홍길동</h6>
+												<span class="user-work fs-3" data-occupation="Web Developer">Web Developer</span>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td>
+									<span class="usr-company" data-company="company name">ThinkLink</span>
+								</td>
+								<td>
+									<span class="usr-dept" data-location="dept name">개발팀</span>
+								</td>
+								<td>
+									<span class="usr-position" data-location="position name">부장</span>
+								</td>
+								<td>
+									<span class="usr-email-addr" data-email="adams@mail.com">adams@mail.com</span>
+								</td>
+								<td>
+									<span class="usr-ph-no" data-phone="휴대폰번호">010-1234-1234</span>
+								</td>
+								<td>
+									<span class="usr-memo" data-memo="메모">나도메모입니다</span>
+								</td>
+								<!-- 아이콘 안보임 -->
+<!-- 								<td> -->
+<!-- 									<div class="action-btn"> -->
+<!-- 										<a href="javascript:void(0)" class="text-primary edit"> -->
+<!-- 											<i class="ti ti-eye fs-5"></i> -->
+<!-- 										</a> -->
+<!-- 										<a href="javascript:void(0)" class="text-dark delete ms-2"> -->
+<!-- 											<i class="ti ti-trash fs-5"></i> -->
+<!-- 										</a> -->
+<!-- 									</div> -->
+<!-- 								</td> -->
+							</tr>
+							<!-- end row -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="${pageContext.request.contextPath}/resources/vendor/js/apps/contact.js"></script>
+<script type="text/javascript">
+	
+</script>

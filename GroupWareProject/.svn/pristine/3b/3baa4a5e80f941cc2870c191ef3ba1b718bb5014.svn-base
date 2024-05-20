@@ -1,0 +1,51 @@
+package kr.or.ddit.groupware.service.memo;
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.memo.IMemoMapper;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.MemoVO;
+
+/**
+ * 메모 서비스 구현체
+ * @author <strong>민경선</strong>
+ * @version 1.0
+ * @see MemoServiceImpl
+ */
+@Service
+public class MemoServiceImpl implements IMemoService{
+
+	@Autowired
+	private IMemoMapper memoMapper;
+	
+	@Override
+	public Result addMemo(MemoVO memoVO) {
+		Result res = null;
+		int cnt = memoMapper.addMemo(memoVO);
+		
+		if(cnt>0) {
+			res= Result.OK;
+	
+		}else {
+			res= Result.FAILED;
+		}
+		return res;
+	}
+
+
+	@Override
+	public List<MemoVO> getNotesList(int emplNo) {
+		return memoMapper.getNotesList(emplNo);
+	}
+
+
+	@Override
+	public MemoVO getNoteOne(int noteId, int emplNo) {
+		
+		return memoMapper.getNoteOne( noteId,  emplNo);
+	}
+}

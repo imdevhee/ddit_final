@@ -1,0 +1,56 @@
+package kr.or.ddit.groupware.controller.board;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.groupware.vo.BoardVO;
+
+/**
+ * 게시판 리스트 및 디테일 컨트롤러
+ * @author <strong>최윤서</strong>
+ * @version 1.0
+ * @see BoardController
+ * @see #list()
+ * @see #detail()
+ */
+@Controller
+@RequestMapping("/board")
+public class BoardController {
+	
+	/**
+	 * 게시판 리스트
+	 * @author <strong>최윤서</strong>
+	 * @param type 타입에 맞춰 게시글 출력 레이아웃이 변경됨
+	 * @param model 게시글 리스트
+	 */
+	@GetMapping(value = "", produces = "application/json; charset=UTF-8")
+	public String list(String type, Model model) {
+		String nextPage = "";
+		
+		List<BoardVO> boardList = new ArrayList<>(); // 게시글 리스트
+		
+		model.addAttribute("boardList", boardList);
+		if(type == null || type.equals("list")) { // 타입에 따라 다음 페이지가 변화함
+			nextPage = "b/board/list";
+		}else {
+			nextPage = "b/board/album";
+		}
+		
+		return nextPage;
+	}
+	
+	/**
+	 * 게시판 디테일
+	 * @author <strong>최윤서</strong>
+	 * @version 1.0
+	 */
+	@GetMapping("/view")
+	public String detail() {
+		return "b/board/detail";
+	}
+}

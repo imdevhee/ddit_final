@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.mapper.memo;
+
+/**
+ * 메모 SQL Mapper
+ * @author 민경선
+ * @version 1.0
+ * @see IMemoMapper
+ */
+public interface IMemoMapper {
+
+}

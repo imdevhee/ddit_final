@@ -1,0 +1,26 @@
+package kr.or.ddit.groupware.mapper.mail;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.BoardVO;
+import kr.or.ddit.groupware.vo.EmailVO;
+import kr.or.ddit.groupware.vo.PaginationInfoVO;
+
+/**
+ * 메일 SQL Mapper
+ * @author 최소희
+ * @version 1.0
+ * @see IMailMapper
+ */
+public interface IMailMapper {
+	public EmailVO selectEmail(int emailNo);
+	public int deleteEmail(int emailNo);
+	public int deleteReception(int emailNo);
+	public int selectEmailCount(PaginationInfoVO<EmailVO> pagingVO);
+	public List<EmailVO> selectEmailList(PaginationInfoVO<EmailVO> pagingVO);
+	public int selectNoReadCount(int emplNo);
+	public int readEmail(int emailNo);
+	public int importantEmail(int emailNo);
+	public int importantReception(int emailNo);
+}

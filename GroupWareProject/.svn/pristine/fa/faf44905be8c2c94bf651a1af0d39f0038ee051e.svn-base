@@ -1,0 +1,71 @@
+package kr.or.ddit.groupware.controller.common;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 메인 컨트롤러
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see MainController
+ */
+@Controller
+@RequestMapping("/")
+public class MainController {
+
+	@GetMapping("")
+	public String testView() {
+		return "main/main";
+	}
+	
+	@RequestMapping("/calendar")
+	public String calendar() {
+		return "main/calendar";
+	}
+	
+	@RequestMapping("/chat")
+	public String chat() {
+		return "main/chat";
+	}
+	
+	@RequestMapping("/kanban")
+	public String kanban() {
+		return "main/kanban";
+	}
+	
+	@RequestMapping("/note")
+	public String note() {
+		return "main/note";
+	}
+	
+	@RequestMapping("/email")
+	public String email() {
+		return "main/email";
+	}
+	
+	@RequestMapping("/addresstable")
+	public String contactTable() {
+		return "main/addressTable";
+	}
+	
+	@RequestMapping("/addressbook")
+	public String contactList() {
+		return "main/addressList";
+	}
+	
+	@RequestMapping("/profile")
+	public String profile() {
+		return "main/profile";
+	}
+	
+	@RequestMapping("/reservation")
+	public String reservation() {
+		return "main/reservation";
+	}
+	
+	@RequestMapping("/temp")
+	public String temp() {
+		return "main/calendar";
+	}
+}

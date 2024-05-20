@@ -1,0 +1,12 @@
+package kr.or.ddit.groupware.vo;
+
+import lombok.Data;
+
+@Data
+public class MessageGroupParticipantVO {
+	private int mssagPrtcpntNo;
+	private int emplNo;
+	private int mssagGroupNo;
+	private String mssagGroupNm;
+	private int mssagLastRead;
+}

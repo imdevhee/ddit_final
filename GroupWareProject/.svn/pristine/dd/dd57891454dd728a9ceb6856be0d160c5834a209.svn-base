@@ -1,0 +1,5 @@
+package kr.or.ddit.groupware.service.electroapproval;
+
+public class ElectroApprovalServiceImpl implements IElectroApprovalService {
+
+}

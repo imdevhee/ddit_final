@@ -1,0 +1,145 @@
+package kr.or.ddit.groupware.controller.board;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.groupware.service.board.IBoardService;
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.BoardVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 게시판 리스트 및 디테일 컨트롤러
+ * 
+ * @author <strong>최윤서</strong>
+ * @version 1.0
+ * @see BoardController
+ * @see #list()
+ * @see #detail()
+ */
+@Controller
+@RequestMapping("/board")
+public class BoardController {
+
+	@Inject
+	private IBoardService boardService;
+
+	@Inject
+	private IEmployeeService employeeService;
+
+	/**
+	 * 게시판 리스트
+	 * 
+	 * @author <strong>최윤서</strong>
+	 * @param type  타입에 맞춰 게시글 출력 레이아웃이 변경됨
+	 * @param model 게시글 리스트
+	 * @return 분기 조건에 따른 이동 페이지(list/album) 지정
+	 */
+	@GetMapping(produces = "application/json; charset=UTF-8")
+	public String list(String type, Model model) {
+		String nextPage = "";
+
+		List<BoardVO> boardList = new ArrayList<>(); // 게시글 리스트
+		boardList = boardService.selectBoardList();
+		model.addAttribute("boardList", boardList);
+		if (type == null || type.equals("list")) { // 타입에 따라 다음 페이지가 변화함
+			nextPage = "board/list";
+		}
+		else {
+			nextPage = "board/album";
+		}
+
+		return nextPage;
+	}
+
+	/**
+	 * 게시판 디테일
+	 * 
+	 * @author <strong>최윤서</strong>
+	 * @param boNo  게시글 번호
+	 * @param model 보여줄 게시글 데이터
+	 * @return 게시글 디테일 페이지
+	 */
+	@GetMapping("/detail")
+	public String detail(int boNo, Model model) {
+		BoardVO boardVO = boardService.selectBoard(boNo);
+		model.addAttribute("board", boardVO);
+		return "board/detail";
+	}
+
+	/**
+	 * 게시판 등록폼
+	 * 
+	 * @author <strong>최윤서</strong>
+	 * @version 1.0
+	 */
+	@GetMapping("/form")
+	public String insertForm() {
+		return "board/form";
+	}
+
+	/**
+	 * 게시판 등록
+	 * 
+	 * @author <strong>최윤서</strong>
+	 * @version 1.0
+	 */
+	@PostMapping("/insert")
+	public String insert(HttpServletRequest req, BoardVO boardVO, Model model, RedirectAttributes ra) {
+		String nextPage = "";
+
+		Map<String, String> errors = new HashMap<String, String>();
+		if (StringUtils.isBlank(boardVO.getBbscttTitle())) {
+			errors.put("bbscttTitle", "제목을 입력해주세요");
+		}
+		if (StringUtils.isBlank(boardVO.getBbscttCn())) {
+			errors.put("bbscttCn", "내용을 입력해주세요");
+		}
+		if (errors.size() > 0) {
+			model.addAttribute("errors", errors);
+			model.addAttribute("boardVO", boardVO);
+			nextPage = "board/form";
+		}
+		else {
+			EmployeeVO employeeVO = employeeService.selectEmployee(1);
+
+			if (employeeVO != null) {
+				boardVO.setEmplNo(employeeVO.getEmplNo());
+				boardVO.setBbsNo(1);
+				Result result = boardService.insertBoard(req, boardVO);
+				if (result.equals(Result.OK)) {
+					ra.addFlashAttribute("message", "게시글 등록 성공!");
+					nextPage = "redirect:/board/detail?bbscttNo=" + boardVO.getBbscttNo();
+				}
+				else {
+					model.addAttribute("message", "다시시도해주세요!");
+					nextPage = "board/form";
+				}
+
+			}
+			else {
+				ra.addFlashAttribute("message", "로그인 후에 사용가능합니다!");
+				nextPage = "redirect:/login";
+			}
+		}
+
+		return nextPage;
+
+	}
+
+}

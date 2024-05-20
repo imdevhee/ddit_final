@@ -1,0 +1,23 @@
+package kr.or.ddit.groupware.controller.project;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 프로젝트 컨트롤러
+ *  업무일지 일감 등
+ * @author <strong>권예은</strong>
+ * @version 1.0
+ * @see ProjectController
+ */
+@Controller
+@RequestMapping("/project")
+public class ProjectController {
+
+	@RequestMapping("/")
+	public String main() {
+		return "project/main";
+	}
+	
+}

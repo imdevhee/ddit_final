@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.vo;
+
+import lombok.Data;
+/**
+ * 문서양식VO
+ * @author <strong>이영주</strong>
+ * @see DocFormVO
+ */
+@Data
+public class DocFormVO {
+	private int docFrmNo;
+	private String docFrmName;
+	private String docFrmContent;
+	private String docFrmType;
+	private String isEnabled;
+}

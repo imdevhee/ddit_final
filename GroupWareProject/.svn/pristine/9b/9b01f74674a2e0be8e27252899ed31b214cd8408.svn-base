@@ -1,0 +1,13 @@
+package kr.or.ddit.groupware.mapper.employee;
+
+import kr.or.ddit.groupware.mapper.addressbook.IAddressMapper;
+
+/**
+ * 사원 SQL Mapper
+ * @author 최소희
+ * @version 1.0
+ * @see IAddressMapper
+ */
+public interface IEmployeeMapper {
+
+}

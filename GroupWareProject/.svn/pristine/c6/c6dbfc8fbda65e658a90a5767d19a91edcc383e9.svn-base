@@ -1,0 +1,101 @@
+package kr.or.ddit.groupware.controller.mail;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.service.mail.IMailService;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.EmailVO;
+
+/**
+ * 메일 컨트롤러
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see MailController
+ */
+@Controller
+@RequestMapping("/mail")
+public class MailController {
+	
+	@Inject
+	private IMailService service;
+	
+	@Inject
+	private IEmployeeService employeeService;
+	
+	/**
+	 * 받은메일함 (selectList)
+	 * @author 최소희
+	 * @param model
+	 * @return 받은메일함 (메일 메인 페이지)
+	 */
+	@GetMapping(value = "/inbox")
+	public String selectInbox(Model model) {
+		int emplNo = 1;
+		
+		List<EmailVO> emailList = service.selectEmailList(emplNo);
+		
+		for (EmailVO emailVO : emailList) {
+			setSender(emailVO);
+		}
+		
+		model.addAttribute("emailList", emailList);
+		
+		return "main/email";
+	}
+
+	/**
+	 * 메일 상세 페이지 (selectOne)
+	 * @author 최소희
+	 * @param model
+	 * @return 메일 상세 페이지
+	 */
+	@GetMapping(value = "/detail")
+	public String selectEmail(Model model, int emailNo) {
+		
+		EmailVO emailVO = service.selectEmail(emailNo);
+		setSender(emailVO);
+		System.out.println("이메일상세페이지>>" + emailVO);
+		model.addAttribute("email",emailVO);
+		
+		return "main/emailDetail";
+	}
+	
+	// emailVO에 보낸사람 employeeVO를 set
+	public void setSender(EmailVO emailVO) {
+		emailVO.setSenderVO(employeeService.selectEmployee(emailVO.getSenderNo()));
+	}
+	
+	// emailVO에 받는사람 employeeVO를 set
+	public void setReciever(EmailVO emailVO) {
+		emailVO.setRecieverVO(employeeService.selectEmployee(emailVO.getEmailReceptionVO().getRecieverNo()));
+	}
+	
+	@GetMapping("/delete")
+	public String deleteEmail(int emailNo, int senderNo, RedirectAttributes ra) {
+		int emplNo = 1;
+		String goPage = "";
+		if(emplNo == senderNo) { // 보낸메일
+			Result result = service.deleteEmail(emailNo);
+			if(result.equals(Result.OK)) {
+				ra.addFlashAttribute("message","메일이 삭제되었습니다!");
+				goPage = "redirect:inbox";
+			}
+		}else { // 받은메일
+			Result result = service.deleteReception(emailNo);
+			if(result.equals(Result.FAILED)) {
+				ra.addFlashAttribute("message","메일 삭제가 실패하였습니다!");
+				goPage = "redirect:detail?emailNo="+emailNo;
+			}
+		}
+		return goPage;
+	}
+}

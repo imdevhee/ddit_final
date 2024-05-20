@@ -1,0 +1,153 @@
+package kr.or.ddit.groupware.controller.chat;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.BinaryWebSocketHandler;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.or.ddit.groupware.service.attach.IAttachFileService;
+import kr.or.ddit.groupware.service.chat.IChatService;
+import kr.or.ddit.groupware.util.FileUtil;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.AttachFileGroupVO;
+import kr.or.ddit.groupware.vo.AttachFileVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+import kr.or.ddit.groupware.vo.MessageVO;
+
+public class WebSocketHandler extends BinaryWebSocketHandler {
+
+	private static Logger log = LoggerFactory.getLogger(WebSocketHandler.class);
+
+	private ObjectMapper mapper = new ObjectMapper();
+	
+	private Map<Integer, ArrayList<WebSocketSession>> roomList = new ConcurrentHashMap<>();
+	private Map<WebSocketSession, String> userSessionMap = new ConcurrentHashMap<>();
+	
+	private List<WebSocketSession> sessionList = new ArrayList<>();
+	
+	@Inject
+	private IChatService chatService;
+	
+	@Inject
+	private IAttachFileService attachFileService;
+
+	@Override
+	protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+		
+		
+		try {
+			String payload = message.getPayload();
+			log.info(payload);
+			
+			MessageVO messageVO = mapper.readValue(payload, MessageVO.class);
+			messageVO.setRgsde(getNow(new Date()));
+			
+			if(messageVO.getType() != null) {
+				String type = messageVO.getType();
+				if(type.equals("upload")) {
+					int atchFileGroupNo = Integer.parseInt(messageVO.getMssagCn());
+					AttachFileGroupVO attachFileGroupVO = attachFileService.getAttachFileGroup(atchFileGroupNo);
+					
+					for (AttachFileVO attachFileVO : attachFileGroupVO.getAttachFileList()) {
+						messageVO.setMssagCn(attachFileVO.getAtchFilePath());
+						messageVO.setAtchFileGroupNo(atchFileGroupNo);
+						messageVO.setType("upload");
+						chatService.insertMessage(messageVO);
+						
+						for (WebSocketSession socketSession : sessionList) {
+							socketSession.sendMessage(new TextMessage(mapper.writeValueAsString(messageVO)));
+						}
+					}
+					return;
+				}
+			}
+			
+			Result result = chatService.insertMessage(messageVO);
+			if(result.equals(Result.OK)) {
+				for (WebSocketSession socketSession : sessionList) {
+					if(!socketSession.getId().equals(session.getId())) {
+						socketSession.sendMessage(new TextMessage(mapper.writeValueAsString(messageVO)));
+					}
+				}
+			}else {
+				for (WebSocketSession socketSession : sessionList) {
+					if(socketSession.getId().equals(session.getId())) {
+						messageVO.setMssagCn("[ERROR] 일시적으로 메세지를 전송할 수 없습니다. 다시 시도해주세요");
+						socketSession.sendMessage(new TextMessage(mapper.writeValueAsString(messageVO)));
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+		log.info("[CONNECT] : " + session.getId());
+		sessionList.add(session);
+	}
+
+	@Override
+	public void handleTransportError(WebSocketSession session, Throwable ex) throws Exception {
+		log.error("[ERROR] : " + ex.getMessage());
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		log.info("[DISCONNECT]");
+		
+		Iterator<WebSocketSession> sessionIt = sessionList.iterator();
+		
+		while(sessionIt.hasNext()) {
+			WebSocketSession wSession = sessionIt.next();
+			if(wSession.getId().equals(session.getId())) {
+				sessionIt.remove();
+				break;
+			}
+		}
+	}
+	
+	private String getUserId(WebSocketSession session) {
+		Map<String,Object> sessionMap = session.getAttributes();
+		
+		for (String key : sessionMap.keySet()) {
+			Object value = sessionMap.get(key);
+			log.info("[getUserId_VALUE] : " + value);
+		}
+		
+		EmployeeVO employeeVO = (EmployeeVO) sessionMap.get("SessionInfo");
+		
+		if (employeeVO == null) {
+			return session.getId();
+		}else {
+			return String.valueOf(employeeVO.getEmplNo());
+		}
+	}
+	
+	public static String getNow(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		SimpleDateFormat getAmPm = new SimpleDateFormat("a");
+
+		String ampm = getAmPm.format(date).equals("AM") ? "오전" : "오후";
+		String now = sdf.format(date);
+		String sendDate = ampm + " " + now;
+		
+		return sendDate;
+	}
+}

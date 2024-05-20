@@ -1,0 +1,23 @@
+package kr.or.ddit.groupware.service.chat;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.ChatListVO;
+
+/**
+ * 채팅 서비스 인터페이스
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see IChatService
+ */
+public interface IChatService {
+
+	List<ChatListVO> selectChatList(int emplNo);
+
+	List<ChatListVO> selectTalkList(int emplNo);
+	
+	Result createChatGroup(String obj);
+
+
+}

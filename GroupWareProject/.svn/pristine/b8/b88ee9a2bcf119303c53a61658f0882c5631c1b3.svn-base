@@ -1,0 +1,20 @@
+package kr.or.ddit.groupware.vo;
+
+import java.util.Date;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class AttachFileVO {
+	private int atchFileNo;
+	private int atchFileGroupNo;
+	private String atchFileNm;
+	private String atchFileOrnlFileNm;
+	private long atchFileSize;
+	private String atchFileFancysize;
+	private String atchFileExtsn;
+	private Date atchFileDate;
+	private String atchFilePath;
+}

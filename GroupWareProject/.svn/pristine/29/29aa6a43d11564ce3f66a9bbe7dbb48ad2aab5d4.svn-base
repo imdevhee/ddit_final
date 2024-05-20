@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.mail.IMailMapper">
+	
+	<resultMap type="emailVO" id="emailMap">
+		<id property="emailNo" column="email_no"/>
+		<id property="senderNo" column="sender_no" />
+		<result property="emailNo" column="email_no" />
+		<result property="senderNo" column="sender_no" />
+		<result property="emailNm" column="email_nm" />
+		<result property="emailCn" column="email_cn" />
+		<result property="emailImprtncYn" column="email_imprtnc_yn" />
+		<result property="emailDelYn" column="email_del_yn" />
+		<result property="emailStatusCode" column="email_status_code" />
+		<result property="emailRgdde" column="email_rgdde" />
+		<result property="emailTrnsmis" column="email_trnsmis" />
+		<collection property="emailReceptionVO" resultMap="emailReceptionMap"/>
+	</resultMap>
+	
+	<resultMap type="emailReceptionVO" id="emailReceptionMap">
+		<id property="emailNo" column="email_no"/>
+		<result property="recieverNo" column="reciever_no" />
+		<result property="emailNo" column="email_no" />
+		<result property="emailRecptnReadYn" column="email_recptn_read_yn" />
+		<result property="emailRecptnImprtncYn" column="email_recptn_imprtnc_yn" />
+		<result property="emailRecptnRecpTypeCode" column="email_recptn_recp_type_code" />
+		<result property="emailRecptnDelYn" column="email_recptn_del_yn" />
+	</resultMap>
+
+	<select id="selectEmailList" parameterType="int" resultMap="emailMap">
+		SELECT
+			a.empl_no as reciever_no,
+		    a.email_no,
+		    a.email_recptn_read_yn,
+		    a.email_recptn_imprtnc_yn,
+		    a.email_recptn_recp_type_code,
+		    a.email_recptn_del_yn,
+		    b.empl_no as sender_no,
+		    b.email_nm,
+		    b.email_cn,
+		    b.email_imprtnc_yn,
+		    b.email_del_yn,
+		    b.email_status_code,
+		    b.email_rgdde,
+		    b.email_trnsmis
+		FROM
+		    email_Reception a
+		INNER JOIN
+		    email b ON a.email_no = b.email_no
+		WHERE a.empl_no = #{emplNo}
+		AND a.email_recptn_del_yn = 'N'
+		AND b.email_status_code = 'E101'
+	</select>
+	
+	<select id="selectEmail" parameterType="int" resultMap="emailMap">
+		SELECT
+			a.empl_no as reciever_no,
+		    a.email_no,
+		    a.email_recptn_read_yn,
+		    a.email_recptn_imprtnc_yn,
+		    a.email_recptn_recp_type_code,
+		    a.email_recptn_del_yn,
+		    b.empl_no as sender_no,
+		    b.email_nm,
+		    b.email_cn,
+		    b.email_imprtnc_yn,
+		    b.email_del_yn,
+		    b.email_status_code,
+		    b.email_rgdde,
+		    b.email_trnsmis
+		FROM
+		    email_Reception a
+		INNER JOIN
+		    email b ON a.email_no = b.email_no
+		WHERE a.email_no = #{emailNo}
+	</select>
+	
+	<update id="deleteEmail">
+		UPDATE
+			email
+		SET
+			email_del_yn = 'Y'
+		WHERE email_no = #{emailNo}
+	</update>
+	
+	<update id="deleteReception">
+		UPDATE
+			email_Reception
+		SET
+			email_recptn_del_yn = 'Y'
+		WHERE email_no = #{emailNo}
+	</update>
+	
+	
+</mapper>

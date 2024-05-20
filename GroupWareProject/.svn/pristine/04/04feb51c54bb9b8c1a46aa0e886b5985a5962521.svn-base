@@ -1,0 +1,19 @@
+package kr.or.ddit.groupware.mapper.mail;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.EmailVO;
+
+/**
+ * 메일 SQL Mapper
+ * @author 최소희
+ * @version 1.0
+ * @see IMailMapper
+ */
+public interface IMailMapper {
+	public List<EmailVO> selectEmailList(int emplNo);
+	public EmailVO selectEmail(int emailNo);
+	public int deleteEmail(int emailNo);
+	public int deleteReception(int emailNo);
+}

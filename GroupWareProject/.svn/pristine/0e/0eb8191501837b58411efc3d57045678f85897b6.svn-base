@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.service.memo;
+
+/**
+ * 메모 서비스 인터페이스
+ * @author <strong>민경선</strong>
+ * @version 1.0
+ * @see IMemoService
+ */
+public interface IMemoService {
+
+}

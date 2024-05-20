@@ -1,0 +1,117 @@
+package kr.or.ddit.groupware.controller.addressbook;
+
+import java.util.Iterator;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.groupware.service.addressbook.IAddressBookService;
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.AddressBookVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 주소록 컨트롤러
+ * 
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see AddressBookController
+ */
+@Slf4j
+@Controller
+@RequestMapping("/address")
+public class AddressBookController {
+	
+	@Inject
+	private IAddressBookService addressService;
+	
+//	@Inject
+//	private IEmployeeService employeeService;
+	
+	
+	/**
+	 * 주소록 리스트 출력
+	 * 
+	 * @author <strong>이영주</strong>
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/addressbook")
+	public String selectAddressList(Model model) {
+
+		return "address/addressList";
+	}
+
+	/**
+	 * 주소록 사원리스트 출력
+	 * 
+	 * @author <strong>이영주</strong>
+	 * @param model 보여줄 사원주소록 데이터 
+	 * @return 주소록 사원리스트
+	 */
+	
+	@GetMapping(value = "/employeeAddressList")
+	public String selectEmployeeAddressList(Model model) {
+		
+		List<AddressBookVO> employeeAdList = addressService.selectEmployeeAddressList();
+		int totalEmployeeCnt = addressService.totalEmployeeCnt();
+		
+		model.addAttribute("employeeAdList", employeeAdList);
+		model.addAttribute("totalEmployeeCnt", totalEmployeeCnt);
+		
+		
+		return "address/employeeAddressList";
+	}
+	
+//	@GetMapping(value = "/address/employeeList")
+//	public ResponseEntity<String> selectEmployeeAddressList() {
+//		
+//		log.info("에이젝스도착!");
+//		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+//	}
+
+	@GetMapping("/addresstable")
+	public String contactTable() {
+
+		return "address/addressTable";
+	}
+	
+	/**
+	 * 
+	 * 주소록 외부인원 인서트
+	 * 
+	 * @author <strong>이영주</strong>
+	 * @param addressBookVO
+	 * @return
+	 */
+	@PostMapping("/insertAddress")
+	public ResponseEntity<String> insertAddress(@RequestBody AddressBookVO addressBookVO){
+		
+				
+		log.info("넘겨받은 값: " +addressBookVO.getAdbkEmail());
+		
+		
+		Result result = addressService.insertAddress(addressBookVO);
+				
+		if(result.equals(Result.EXIST)) {
+			return new ResponseEntity<String> ("EXIST", HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String> ("NOTEXIST", HttpStatus.OK);
+		}
+	}
+	
+	
+
+}

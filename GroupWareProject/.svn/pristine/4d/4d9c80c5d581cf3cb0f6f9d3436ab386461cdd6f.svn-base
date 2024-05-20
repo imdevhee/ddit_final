@@ -1,0 +1,69 @@
+package kr.or.ddit.groupware.controller.conn;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 로그인 컨트롤러
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see LoginController
+ */
+@Controller
+@RequestMapping("/")
+public class LoginController {
+	
+	@Inject
+	IEmployeeService employeeService;
+
+	@GetMapping("/login")
+	public String login() {
+		return "conn/login";
+	}
+	
+	@PostMapping("/loginCheck") 
+	public String loginCheck(HttpSession session, EmployeeVO employeeVO, Model model) {
+		String nextPage = "";
+		Map<String, String> errors = new HashMap<>();
+		
+		if(StringUtils.isBlank(employeeVO.getEmplId())) {
+			errors.put("emplId", "아이디를 입력해주세요");
+		}
+		if(StringUtils.isBlank(employeeVO.getEmplPassword())) {
+			errors.put("emplPassword", "비밀번호를 입력해주세요");
+		}
+		
+		if(errors.size() > 0) {
+			model.addAttribute("errors", errors);
+			model.addAttribute("employeeVO", employeeVO);
+			
+			nextPage = "conn/login";
+		}else {
+//			EmployeeVO employee = employeeService.loginCheck(employeeVO);
+			
+//			if(employee != null) {
+//				session.setAttribute("SessionInfo", employee);
+//				nextPage = "/";
+//			}else {
+//				model.addAttribute("message", "로그인이 실패하였습니다! 아이디 및 비밀번호를 다시 확인해주세요!");
+//				model.addAttribute("employee", employeeVO);
+//				nextPage = "conn/login";
+//			}
+		}
+		
+		return nextPage;
+	}
+}

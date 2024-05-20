@@ -1,0 +1,24 @@
+package kr.or.ddit.groupware.vo;
+
+import lombok.Data;
+
+/**
+ * ContactVO
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see ContactVO
+ */
+@Data
+public class ContactVO {
+	private int cttpcNo;        // SEQ_CONTACT
+    private int emplNo;         // SEQ_EMPLOYEE
+    private String cttpcEmpl;
+    private String cttpcNm;     // 외부인원 이름
+    private String cttpcCmpny;  // 회사명
+    private String cttpcDept;   // 부서명
+    private String cttpcClsf;   // 직위명
+    private String cttpcEmail;  // 이메일
+    private String cttpcTelno;  // 휴대폰번호
+    private String cttpcMemo;   // 외부인원에 대한 메모
+    private String field;
+}

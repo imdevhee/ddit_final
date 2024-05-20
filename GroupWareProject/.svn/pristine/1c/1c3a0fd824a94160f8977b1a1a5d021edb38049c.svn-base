@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.groupware.mapper.board.IBoardMapper">
+
+	<select id="selectBoardList" resultType="BoardVO">
+		select * from board
+	</select>
+
+
+	<select id="selectBoard" parameterType="int">
+
+
+	</select>
+
+	<!-- <insert id="insertBoard" parameterType="boardVO" useGeneratedKeys="true"> -->
+	<!-- <selectKey keyProperty="bbscttNo" resultType="int" order="BEFORE"> -->
+	<!-- select seq_bbsctt.nextval from dual -->
+	<!-- </selectKey> -->
+
+	<!-- insert into board( -->
+	<!-- BBSCTT_NO, BBS_NO, EMPL_NO, BBSCTT_TITLE, BBSCTT_CN, BBSCTT_RDCNT, 
+		IMPRTNC_YN, DEL_YN, ATCH_FILE_GRP_NO, RGSDE, REGISTER, UPDDE, UPDUSR -->
+	<!-- )values( -->
+	<!-- #{bbscttNo}, #{bbsNo}, #{emplNo}, #{bbscttTitle}, #{bbscttCn}, #{bbscttRdcnt}, 
+		#{imprtncYn}, #{delYn}, #{atchFileGrpNo}, sysdate, #{register}, sysdate, 
+		#{updusr} -->
+	<!-- ) -->
+
+	<!-- </insert> -->
+	
+	
+	<insert id="insertBoard" parameterType="boardVO" useGeneratedKeys="true">
+    <selectKey keyProperty="bbscttNo" resultType="int" order="BEFORE">
+        select seq_bbsctt.nextval from dual
+    </selectKey>
+    
+    insert into board(
+        BBSCTT_NO, BBS_NO, EMPL_NO, BBSCTT_TITLE, BBSCTT_CN, BBSCTT_RDCNT, IMPRTNC_YN, DEL_YN, ATCH_FILE_GRP_NO, RGSDE, REGISTER, UPDDE, UPDUSR
+    ) values (
+        #{bbscttNo}, -- 새로운 보드 번호
+        #{bbsNo}, -- 보드 카테고리 번호 (부모 키)
+        #{emplNo}, -- 직원 번호
+        #{bbscttTitle}, -- 보드 제목
+        #{bbscttCn}, -- 보드 내용
+        #{bbscttRdcnt}, -- 조회 수
+        #{imprtncYn}, -- 중요 여부
+        #{delYn}, -- 삭제 여부
+        #{atchFileGrpNo}, -- 첨부 파일 그룹 번호
+        sysdate, -- 등록일
+        #{register}, -- 등록자
+        sysdate, -- 수정일
+        #{updusr} -- 수정자
+    )
+</insert>
+
+</mapper>

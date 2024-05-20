@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.chat.IChatMapper">
+	<select id="selectChatList" parameterType="int" resultType="chatListVO">
+		SELECT
+		    a.empl_no empl_no
+		    , c.clsf_nm clsf_code
+		    , b.cmmn_code_name1 dept_code
+		    , empl_nm
+		    , empl_id
+		    , empl_email
+		    , empl_telno
+		    , empl_profl_photo
+            , d.estbs_cn estbs_cn
+		FROM
+		    employee a
+		INNER JOIN COMM_CODE b on (dept_code = cmmn_code)
+        INNER JOIN CLASS_OF_POSITION c on (a.clsf_code = c.clsf_code)
+        FULL OUTER JOIN EMPLOYEE_ESTBS d on (d.empl_no = a.empl_no)
+		where
+		    enabled= '1' and a.empl_no != #{emplNo}
+        order by c.clsf_level desc
+	</select>
+	
+	<insert id="createChatGroup" parameterType="messageGroupVO" useGeneratedKeys="true">
+		<selectKey keyProperty="mssagGroupNo" order="BEFORE" resultType="int">
+			select seq_mssag_group.nextval from dual
+		</selectKey>
+		insert into message_group(
+			mssag_group_no
+			, mssag_group_type_code
+			, rgsde
+		)values(
+			#{mssagGroupNo}
+			, #{mssagGroupTypeCode}
+			, sysdate
+		)
+	</insert>
+	
+	<insert id="enterChatGroup" parameterType="messageGroupParticipantVO">
+		insert into message_group_participant(
+			mssag_prtcpnt_no
+			, empl_no
+			, mssag_group_no
+			, mssag_group_nm
+		)values(
+			SEQ_MSSAG_PRTCPNT.nextval
+			, #{emplNo}
+			, #{mssagGroupNo}
+			, #{mssagGroupNm}
+		)
+	</insert>
+	
+	<select id="getEmplName" parameterType="int" resultType="string">
+		select empl_nm
+		from employee
+		where empl_no = #{emplNo}
+	</select>
+	
+	<select id="selectTalkList" parameterType="int" resultType="messageGroupParticipantVO">
+		select 
+			mssag_prtcpnt_no
+			, empl_no
+			, mssag_group_no
+			, mssag_group_nm
+			, mssag_last_read
+		from message_group_participant
+		where empl_no = #{emplNo}
+	</select>
+	
+</mapper>

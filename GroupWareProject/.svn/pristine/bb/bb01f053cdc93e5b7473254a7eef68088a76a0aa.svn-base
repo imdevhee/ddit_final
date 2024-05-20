@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.memo;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 메모 컨트롤러
+ * @author <strong>민경선</strong>
+ * @version 1.0
+ * @see MemoController
+ */
+@Controller
+@RequestMapping("/memo")
+public class MemoController {
+
+}

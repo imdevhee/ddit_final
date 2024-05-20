@@ -1,0 +1,23 @@
+package kr.or.ddit.groupware.mapper.approval;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.vo.ApprovalVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+import kr.or.ddit.groupware.vo.OrganizationTreeVO;
+
+/**
+ * 전자결재 SQL Mapper
+ * @author 이명문
+ * @version 1.0
+ * @see IApprovalMapper
+ */
+public interface IApprovalMapper {
+
+	List<ApprovalVO> selectApprovalList(String type);
+
+	List<OrganizationTreeVO> selectOragnTree();
+
+	List<EmployeeVO> selectEmplList();
+
+}

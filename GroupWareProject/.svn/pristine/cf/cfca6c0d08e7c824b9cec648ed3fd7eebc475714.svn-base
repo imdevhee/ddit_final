@@ -1,0 +1,32 @@
+package kr.or.ddit.groupware.controller.drive;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 자료실 컨트롤러
+ * 
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see DriveController
+ */
+@Controller
+@RequestMapping("/drive")
+public class DriveController {
+
+	/**
+	 * @method : driveMain
+	 * @auther : <strong>이명문</strong>
+	 * @param  : model - 
+	 * @return : drive/drvie_main
+	 * @date : 2024. 4. 26
+	 */
+	@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+	@GetMapping("")
+	public String driveMain(Model model) {
+		return "drive/drvie_main";
+	}
+}

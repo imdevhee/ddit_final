@@ -1,0 +1,21 @@
+package kr.or.ddit.groupware.service.board;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.vo.BoardVO;
+
+/**
+ * 게시판 서비스 인터페이스
+ * @author <strong>최윤서</strong>
+ * @version 1.0
+ * @see IBoardService
+ */
+public interface IBoardService {
+
+	public List<BoardVO> selectBoardList();
+
+	public BoardVO selectBoard(int boNo);
+
+	public void insert(BoardVO boardVO);
+
+}

@@ -1,0 +1,20 @@
+package kr.or.ddit.groupware.mapper.employee;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.mapper.addressbook.IAddressBookMapper;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 사원 SQL Mapper
+ * @author 최소희
+ * @version 1.0
+ * @see IAddressBookMapper
+ */
+public interface IEmployeeMapper {
+	public EmployeeVO selectEmployee(int empNo);
+	public int pwCheck(EmployeeVO employeeVO);
+	public int updateEmployee(EmployeeVO employeeVO);
+	public List<EmployeeVO> selectAllEmpl();
+	public List<EmployeeVO> selectDeptEmpl(String deptCode);
+}

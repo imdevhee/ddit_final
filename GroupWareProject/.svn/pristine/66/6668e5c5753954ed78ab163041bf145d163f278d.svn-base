@@ -1,0 +1,9 @@
+package kr.or.ddit.groupware.mapper.drive;
+
+import kr.or.ddit.groupware.vo.LogVO;
+
+public interface ILogMapper {
+
+	void insertLog(LogVO logVO);
+
+}

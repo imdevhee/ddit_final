@@ -1,0 +1,69 @@
+package kr.or.ddit.groupware.controller.chat;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.or.ddit.groupware.service.chat.IChatService;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.ChatListVO;
+import kr.or.ddit.groupware.vo.CustomUser;
+
+/**
+ * 채팅 컨트롤러
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see ChatController
+ */
+@Controller
+@RequestMapping("/chat")
+public class ChatController {
+	
+	@Inject
+	private IChatService chatService;
+	
+	
+	private ObjectMapper mapper = new ObjectMapper();
+
+	@GetMapping("")
+	public String chat(Model model) {
+		CustomUser customUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		model.addAttribute("employee", customUser.getEmployeeVO());
+		return "main/chat";
+	}
+	
+	@GetMapping(value = "/chatlist", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<String> getChatList(int emplNo) throws Exception {
+		List<ChatListVO> chatList = chatService.selectChatList(emplNo);
+		return chatList == null ? 
+			ResponseEntity.status(HttpStatus.NOT_FOUND).body("failed") :
+			ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(chatList));
+	}
+	
+	@GetMapping(value = "/talklist", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<String> getTalkList(int emplNo) throws Exception {
+		List<ChatListVO> talkList = chatService.selectTalkList(emplNo);
+		return talkList == null ? 
+				ResponseEntity.status(HttpStatus.NOT_FOUND).body("failed") :
+					ResponseEntity.status(HttpStatus.OK).body(mapper.writeValueAsString(talkList));
+	}
+	
+	@PostMapping("/create")
+	public ResponseEntity<String> createChatGroup(@RequestBody String obj) {
+		System.out.println(obj);
+		Result result = chatService.createChatGroup(obj);
+		return null;
+	}
+}

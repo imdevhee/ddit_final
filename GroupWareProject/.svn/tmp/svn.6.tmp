@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.service.employee;
+
+/**
+ * 사원 서비스 구현체
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see EmployeeServiceImpl
+ */
+public class EmployeeServiceImpl implements IEmployeeService {
+
+}

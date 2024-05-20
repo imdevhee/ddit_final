@@ -1,0 +1,18 @@
+package kr.or.ddit.groupware.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class EmailVO {
+	private int emailNo;
+	private int emplNo;
+	private String emailNm;
+	private String emailCn;
+	private String emailImprtncYn;
+	private String emailDelYn;
+	private String emailStatusCode;
+	private Date emailRgdde;
+	private Date emailTrnsmis;
+}

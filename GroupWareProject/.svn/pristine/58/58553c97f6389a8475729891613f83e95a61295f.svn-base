@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.project.ITaskMapper">
+	
+	<select id="selectOngoingTaskListByEmplNo" parameterType="Map" resultType="taskVO">
+		select 
+		    task_no,
+		    upper_task_no,
+		    t.prjct_no,
+		    p.prjct_nm,
+		    task_nm,
+		    task_cn,
+		    task_progrs,
+		    task_imprtnc,
+		    task_priort,
+		    task_begin_dt,
+		    task_end_dt,
+			task_last_updde,
+			TO_CHAR(task_begin_dt, 'YYYY-MM-DD') task_begin_dt_str,
+			TO_CHAR(task_end_dt, 'YYYY-MM-DD') task_end_dt_str,
+			TO_CHAR(task_last_updde, 'YYYY-MM-DD') task_last_updde_str,
+		    atch_file_group_no,
+		    pp.prjct_prtcpnt_color_code prjct_color
+		from 
+		    task t, project p, project_participant pp
+		where
+		    p.prjct_no = t.prjct_no
+		    and p.prjct_code = 'P102'
+		    and p.prjct_no = pp.prjct_no
+		    and pp.empl_no = #{emplNo}
+		    and t.empl_no = #{emplNo}
+		    <choose>
+		    	<when test="status == 'todo'">
+		    		and t.task_progrs = 0
+		    	</when>
+		    	<when test="status == 'inProgress'">
+		    		and t.task_progrs > 0
+		    		<![CDATA[ and t.task_progrs < 100 ]]>
+		    	</when>
+		    	<when test="status == 'done'">
+		    		and t.task_progrs = 100
+		    	</when>
+		    </choose>
+	</select>
+	
+	<select id="selectTaskByTaskNo" parameterType="Map" resultType="taskVO">
+		SELECT
+		    task_no,
+		    upper_task_no,
+		    t.prjct_no,
+		    p.prjct_nm,
+		    pp.prjct_prtcpnt_color_code prjct_color,
+		    t.empl_no,
+		    e.empl_nm,
+		    task_nm,
+		    task_cn,
+		    task_progrs,
+		    task_imprtnc,
+		    task_priort,
+		    task_register,
+		    task_rgsde,
+		    task_begin_dt,
+		    task_end_dt,
+		    task_last_updde,
+			TO_CHAR(task_begin_dt, 'YYYY-MM-DD') task_begin_dt_str,
+			TO_CHAR(task_end_dt, 'YYYY-MM-DD') task_end_dt_str,
+			TO_CHAR(task_last_updde, 'YYYY-MM-DD') task_last_updde_str,
+		    atch_file_group_no
+		FROM
+		    task t, employee e, project_participant pp, project p
+		where
+		    t.empl_no = e.empl_no
+		    and t.prjct_no = pp.prjct_no
+		    and t.prjct_no = p.prjct_no
+		    and pp.empl_no = #{emplNo}
+		    and task_no = #{taskNo}
+	</select>
+	
+	<select id="selectTaskListByPrjctNo" parameterType="int" resultType="taskVO">
+		SELECT
+		    task_no,
+		    upper_task_no,
+		    prjct_no,
+		    empl_no,
+		    task_nm,
+		    task_cn,
+		    task_progrs,
+		    task_imprtnc,
+		    task_priort,
+		    task_register,
+		    task_rgsde,
+		    task_begin_dt,
+		    task_end_dt,
+		    task_last_updde,
+		    "Field",
+		    atch_file_group_no
+		FROM
+		    task
+		where
+		    prjct_no = #{prjctNo}
+	</select>
+	
+</mapper>

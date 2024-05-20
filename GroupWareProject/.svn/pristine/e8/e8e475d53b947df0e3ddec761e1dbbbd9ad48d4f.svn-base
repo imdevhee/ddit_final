@@ -1,0 +1,5 @@
+package kr.or.ddit.groupware.service.mail;
+
+public class MailServiceImpl implements IMailService {
+
+}

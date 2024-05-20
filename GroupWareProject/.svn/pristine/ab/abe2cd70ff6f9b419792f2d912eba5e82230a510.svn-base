@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.attendance.IAttendanceMapper">
+	
+	<resultMap type="dclzStatusVO" id="dclzStatusMap">
+		<result property="dclzNo" column="dclz_no" />
+		<result property="emplNo" column="empl_no" />
+		<result property="attendDt" column="attend_dt" />
+		<result property="lvffcDt" column="lvffc_dt" />
+		<result property="year" column="year" />
+		<result property="month" column="month" />
+	</resultMap>
+	
+	<!-- 해당하는 달 출력 -->
+	<select id="selectDclzList" parameterType="dclzStatusVO" resultType="dclzStatusVO">
+		SELECT
+		    dclz_no,
+		    empl_no,
+		    attend_dt,
+		    lvffc_dt
+		FROM
+		    dclz_status
+		WHERE
+		    attend_dt BETWEEN #{firstMonday} AND #{lastSunday}
+		AND empl_no = #{emplNo}
+	</select>
+	
+</mapper>

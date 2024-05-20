@@ -1,0 +1,54 @@
+package kr.or.ddit.groupware.service.employee;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.employee.IEmployeeMapper;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 사원 서비스 구현체
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see EmployeeServiceImpl
+ */
+
+@Service
+public class EmployeeServiceImpl implements IEmployeeService {
+
+	@Inject
+	private IEmployeeMapper mapper;
+	
+	@Override
+	public EmployeeVO selectEmployee(int empNo) {
+		return mapper.selectEmployee(empNo);
+	}
+
+	@Override
+	public Result pwCheck(EmployeeVO employeeVO) {
+		Result result = null;
+		int status = mapper.pwCheck(employeeVO);
+		if(status > 0 ) {	// 패스워드 일치
+			result = Result.EXIST;
+		}else {				// 패스워드 불일치
+			result = Result.NOTEXIST;
+		}
+		return result;
+	}
+
+	@Override
+	public Result updateEmployee(EmployeeVO employeeVO) {
+		Result result = null;
+		int status = mapper.updateEmployee(employeeVO);
+		if(status > 0 ) {	// 마이페이지 수정 성공
+			result = Result.OK;
+		}
+		else { // 마이페이지 수정 실패
+			result = Result.FAILED;
+		}
+		return result;
+	}
+
+}

@@ -1,0 +1,30 @@
+package kr.or.ddit.groupware.controller.project;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.groupware.service.project.IProjectService;
+import kr.or.ddit.groupware.vo.ProjectVO;
+
+@Controller
+@RequestMapping("/admin/project")
+public class AdminProjectController {
+	
+	@Inject
+	private IProjectService projectService;
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/stat")
+	public String adminProjectStat(ProjectVO projectVO, Model model) {
+		List<ProjectVO> projectList = projectService.selectProjectListForChart(projectVO);
+		model.addAttribute("projectList", projectList);
+		return "admin/project/project_statistics";
+	}
+}

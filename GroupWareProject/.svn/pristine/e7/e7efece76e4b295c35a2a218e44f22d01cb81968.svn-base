@@ -1,0 +1,20 @@
+package kr.or.ddit.groupware.service.mail;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.EmailReceptionVO;
+import kr.or.ddit.groupware.vo.EmailVO;
+
+/**
+ * 메일 서비스 인터페이스
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see IMailService
+ */
+public interface IMailService {
+	public List<EmailVO> selectEmailList(int emplNo);
+	public EmailVO selectEmail(int emailNo);
+	public Result deleteEmail(int emailNo);
+	public Result deleteReception(int emailNo);
+}

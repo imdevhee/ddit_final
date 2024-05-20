@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.vo;
+
+import lombok.Data;
+
+/**
+ * ContactVO
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see AddressGroupMappingVO
+ */
+@Data
+public class AddressGroupMappingVO {
+	private int adbkGrpMpngNo; 	// 주소록 그룹번호
+	private int adbkGrpNo;		// SEQ_CONTACT
+	private int adbkNo;			
+}

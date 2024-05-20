@@ -1,0 +1,22 @@
+package kr.or.ddit.groupware.mapper.addressbook;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.AddressBookVO;
+
+/**
+ * 주소록 SQL Mapper
+ * @author 이영주
+ * @version 1.0
+ * @see IAddressBookMapper
+ */
+public interface IAddressBookMapper {
+
+	public List<AddressBookVO> selectEmployeeAddressList();
+
+	public int totalEmployeeCnt();
+
+	public int insertAddress(AddressBookVO addressBookVO);
+
+}

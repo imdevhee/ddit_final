@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.approval.IApprovalMapper">
+
+	<resultMap type="sanctionerBookmarkGroupVO" id="bookmarkGroupMap">
+		<id property="sanctnerBkmkNo" column="sanctner_bkmk_no" />
+		<result property="sanctnerBkmkNm" column="sanctner_bkmk_nm" />
+		<result property="sanctionerOner" column="sanctioner_oner" />
+		<collection property="sanctionerBookmarkList" resultMap="bookmarkMap" />
+	</resultMap>
+	
+	<resultMap type="sanctionerBookmarkVO" id="bookmarkMap">
+		<result property="sanctnerBkmkNo" column="sanctner_bkmk_no" />
+		<result property="emplNo" column="empl_no" />
+		<result property="emplNm" column="empl_nm" />
+		<result property="clsfNm" column="clsf_nm" />
+		<result property="deptNm" column="dept_nm" />
+		<result property="sanctnerBkmkOrdr" column="sanctner_bkmk_ordr" />
+	</resultMap>
+
+	<select id="selectApprovalList" parameterType="string" resultType="approvalVO">
+		select
+			aprovl_no
+			, doc_frm_no
+			, empl_no
+			, aprovl_nm
+			, aprovl_cn
+			, aprovl_memo
+			, aprovl_type_code
+			, aprovl_sttus_code
+			, aprovl_ipcr
+			, emrgncy_yn
+			, submit_dt
+			, clos_dt
+			, atch_file_grpup_no
+		from approval
+	</select>
+	
+	<insert id="insertSanctioner" parameterType="SanctionerBookmarkVO">
+		insert into SANCTIONER_BOOKMARK(
+			sanctner_bkmk_no
+			, empl_no
+			, sanctner_bkmk_ordr
+		)values(
+			#{sanctnerBkmkNo}
+			, #{emplNo}
+			, #{sanctnerBkmkOrdr}
+		)
+	</insert>
+	
+	<insert id="insertSanctionerGroup" parameterType="sanctionerBookmarkGroupVO" useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="sanctnerBkmkNo" order="BEFORE">
+			select SEQ_SANCTIONER_BOOKMARK_GROUP.nextval from dual
+		</selectKey>
+		insert into SANCTIONER_BOOKMARK_GROUP(
+			sanctner_bkmk_no
+			, sanctner_bkmk_nm
+			, sanctioner_oner
+		)values(
+			#{sanctnerBkmkNo}
+			, #{sanctnerBkmkNm}
+			, #{sanctionerOner}
+		)
+	</insert>
+	
+	<select id="selectMyLine" parameterType="sanctionerBookmarkGroupVO" resultMap="bookmarkGroupMap">
+		select 
+			sbg.sanctner_bkmk_no
+			, sbg.sanctner_bkmk_nm
+			, sbg.sanctioner_oner
+            , sb.empl_no
+            , e.empl_nm
+            , c.cmmn_code_name1 dept_nm
+            , cop.clsf_nm
+            , sb.sanctner_bkmk_ordr
+		from SANCTIONER_BOOKMARK_GROUP sbg
+        left outer join sanctioner_bookmark  sb on sb.sanctner_bkmk_no = sbg.sanctner_bkmk_no
+        left outer join employee e on e.empl_no = sb.empl_no
+        left outer join class_of_position cop on e.clsf_code = cop.clsf_code
+        left outer join comm_code c on e.dept_code = c.cmmn_code
+		where sbg.sanctioner_oner = #{sanctionerOner}
+        order by sb.sanctner_bkmk_ordr asc
+	</select>
+	
+	<delete id="deleteMyLine" parameterType="sanctionerBookmarkGroupVO">
+		delete from SANCTIONER_BOOKMARK
+		where sanctner_bkmk_no = #{sanctnerBkmkNo}
+	</delete>
+	
+	<delete id="deleteMyLineGroup" parameterType="sanctionerBookmarkGroupVO">
+		delete from SANCTIONER_BOOKMARK_GROUP
+		where sanctner_bkmk_no = #{sanctnerBkmkNo}
+	</delete>
+
+	<select id="selectOragnTree" resultType="organizationTreeVO">
+		SELECT CMMN_CODE id
+			, CMMN_CODE_NAME1 text
+			, NVL(CMMN_CODE_OPTION1, '#') parent
+		FROM COMM_CODE
+		WHERE CMMN_GROUP_CODE LIKE '%' || 'D' || '%'
+		AND USE_YN = 'Y'
+		START WITH CMMN_CODE_OPTION1 IS NULL
+		CONNECT BY PRIOR CMMN_CODE = CMMN_CODE_OPTION1
+		ORDER SIBLINGS BY CMMN_CODE
+	</select>
+	
+</mapper>

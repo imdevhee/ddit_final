@@ -1,0 +1,17 @@
+package kr.or.ddit.groupware.vo;
+
+import lombok.Data;
+
+/**
+ * AddressBookVO
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see AddressBookVO
+ */
+@Data
+public class AddressBookVO {
+	private int adbkNo;         // SEQ_ADDRESSBOOK
+    private int adbkGrpNo;      // 주소록 그룹 번호
+    private int cttpcNo;        // SEQ_CONTACT
+    private String field2;
+}

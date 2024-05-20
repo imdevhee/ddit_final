@@ -1,0 +1,153 @@
+package kr.or.ddit.groupware.service.rental;
+
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.notification.INotificationMapper;
+import kr.or.ddit.groupware.mapper.rental.IRentalMapper;
+import kr.or.ddit.groupware.util.NotificationUtil;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.NotificationVO;
+import kr.or.ddit.groupware.vo.PaginationInfoVO;
+import kr.or.ddit.groupware.vo.RentalVO;
+import kr.or.ddit.groupware.vo.StockVO;
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
+@Service
+public class RentalServiceImpl implements IRentalService {
+    
+	@Inject
+	private INotificationMapper notiMapper;
+	@Inject
+	private NotificationUtil notiUtill;
+	@Autowired
+	private IRentalMapper rentalMapper;
+	@Override
+	public Result RentVehicle(RentalVO rentalVO) {
+		Result res = null;
+
+		int cnt = rentalMapper.rentVehicle(rentalVO);
+
+		//알림 받을 vo객체 준비
+		if (cnt > 0) {
+			notiRentVehicle(rentalVO);
+			
+			res = Result.OK;
+		}
+		else {
+			{
+				res = Result.FAILED;
+			}
+		}
+		return res;
+	}
+
+	private void notiRentVehicle(RentalVO rentalVO) {
+		NotificationVO notificationVO = new NotificationVO();
+	    notificationVO.setNtcnRecp(rentalVO.getEmplNo()); // 예약자에게 알림
+	    notificationVO.setNtcnTypeCode("N114"); // 알림 유형 코드
+	    String content = "차량 대여 신청이 있습니다. 대여신청 번호: " + rentalVO.getErntNo();
+	    notificationVO.setNtcnContent(content);
+	    notificationVO.setNtcnUrl("/myReservation/rentalList"); // 예약 세부정보 페이지 URL
+	    notificationVO.setLocalDt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime());
+	    
+	    notiMapper.insertNotification(notificationVO); // 알림 DB에 저장
+//	    notiUtill.sendNoti(rentalVO.getEmplNo());
+	}
+
+	@Override
+	public Result RentSupplies(RentalVO rentalVO) {
+		Result res = null;
+		  notiRentSupplies(rentalVO);
+		int cnt = rentalMapper.rentSupplies(rentalVO);
+
+		if (cnt > 0) {
+			res = Result.OK;
+			
+		}
+		else {
+			{
+				res = Result.FAILED;
+			}
+		}
+		return res;
+	}
+
+	private void notiRentSupplies(RentalVO rentalVO) {
+		NotificationVO notificationVO = new NotificationVO();
+	    notificationVO.setNtcnRecp(rentalVO.getEmplNo()); // 예약자에게 알림
+	    notificationVO.setNtcnTypeCode("N114"); // 알림 유형 코드
+	    String content = "비품 대여 신청이 있습니다. 대여신청 번호: " + rentalVO.getErntNo();
+	    notificationVO.setNtcnContent(content);
+	    notificationVO.setNtcnUrl("/rental/view/" + rentalVO.getErntNo()); // 예약 세부정보 페이지 URL
+	    notificationVO.setLocalDt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime());
+	    
+	    notiMapper.insertNotification(notificationVO); // 알림 DB에 저장
+//	    notiUtill.sendNoti(rentalVO.getEmplNo());
+	
+	}
+
+
+	@Override
+	public List<RentalVO> getReservationsByResourceType(RentalVO rentalVO) {
+		return rentalMapper.findRentalByResourceType(rentalVO);
+	}
+
+	@Override
+	public boolean isRentalPossible(RentalVO rentalVO) {
+		
+		 List<RentalVO> conflicts = rentalMapper.findOverlappingRentals(
+		            rentalVO.getEqpnmCd(),
+		            rentalVO.getErntBeginDt(),
+		            rentalVO.getErntEndDt()
+		        );
+		        return conflicts.size() == 0;
+		    }
+
+	@Override
+	public boolean deleteRentalVehicle(RentalVO rentalVO) {
+		return rentalMapper.cancleRentalVehicle(rentalVO);
+	}
+
+	@Override
+	public boolean deleteRentalSupplies(RentalVO rentalVO) {
+		return rentalMapper.cancleRentalSupplies(rentalVO);
+		
+	}
+	
+//	public boolean checkStockAvailability(String eqpnmCd, int erntQy) {
+//		StockVO stock = rentalMapper.findByEqpnmCd(eqpnmCd);
+//		if (stock != null && stock.getAvailableQy() < erntQy) {
+//			throw new IllegalArgumentException("재고가 부족합니다.");
+//		}
+//		return stock != null && stock.getAvailableQy() >= erntQy;
+//	}
+//
+//	public boolean updateStock(RentalVO rentalVO) {
+//		StockVO stock = rentalMapper.findByEqpnmCd(rentalVO.getEqpnmCd());
+//		if (stock != null && stock.getAvailableQy() >= rentalVO.getErntQy()) {
+//			int newAvailableQy = stock.getAvailableQy() - rentalVO.getErntQy();
+//			stock.setAvailableQy(newAvailableQy);
+//			rentalMapper.updateStock(stock); // 가정: stockRepository에 적절한 update 메서드가 구현되어 있음
+//			return true;
+//		}
+//		return false;
+//	}
+
+	@Override
+	public int selectRentalCount(PaginationInfoVO<RentalVO> pagingVO) {
+		return rentalMapper.selectRentalCount(pagingVO);
+	}
+
+	@Override
+	public List<RentalVO> selectRentalList(PaginationInfoVO<RentalVO> pagingVO) {
+		return rentalMapper.selectRentalList(pagingVO);
+		}
+}

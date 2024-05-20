@@ -1,0 +1,13 @@
+package kr.or.ddit.groupware.mapper.board;
+
+import kr.or.ddit.groupware.controller.board.BoardController;
+
+/**
+ * 게시판 SQL Mapper
+ * @author 최윤서
+ * @version 1.0
+ * @see BoardController
+ */
+public interface IBoardMapper {
+
+}

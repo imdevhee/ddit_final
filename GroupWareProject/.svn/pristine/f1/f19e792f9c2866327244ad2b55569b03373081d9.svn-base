@@ -1,0 +1,165 @@
+package kr.or.ddit.groupware.controller.memo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.google.common.io.ByteProcessor;
+
+import java.io.Console;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import kr.or.ddit.groupware.service.attach.IAttachFileService;
+import kr.or.ddit.groupware.service.memo.IMemoService;
+import kr.or.ddit.groupware.util.FileUtil;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.util.TableCode;
+import kr.or.ddit.groupware.vo.AttachFileGroupVO;
+import kr.or.ddit.groupware.vo.AttachFileVO;
+import kr.or.ddit.groupware.vo.CustomUser;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+import kr.or.ddit.groupware.vo.MemoVO;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 메모 컨트롤러
+ * 
+ * @author <strong>민경선</strong>
+ * @version 1.0
+ * @see MemoController
+ */
+@Slf4j
+@Controller
+@RequestMapping("/")
+public class MemoController {
+
+	@Inject
+	private IMemoService memoService;
+	@Inject
+	private FileUtil fileUtil;
+	@Inject
+	private IAttachFileService fileService;
+
+	@RequestMapping("/note")
+	public String note() {
+		return "main/memo";
+	}
+
+	/**
+	 * 메모등록
+	 * 
+	 * @author <strong>민경선</strong>
+	 * @param VO
+	 * @return
+	 * 
+	 */
+	
+////	CustomUser customUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+////	EmployeeVO employeeVO = customUser.getEmployeeVO();
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	@RequestMapping(value = "/addNote", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> addNote(@RequestParam("imgFile") List<MultipartFile> imgFile,
+			@RequestParam("memoNm") String noteTitle, @RequestParam("memoCn") String noteDescription, MemoVO memoVO) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			// 사용자 인증 정보 가져오기
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if (!(principal instanceof CustomUser)) {
+				response.put("message", "Authentication failed");
+				return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+			}
+
+			CustomUser user = (CustomUser) principal;
+			EmployeeVO employeeVO = user.getEmployeeVO();
+
+			int atchFileGroupNo = fileUtil.saveUploadFile(imgFile, TableCode.MEMO);
+			memoVO.setEmplNo(employeeVO.getEmplNo());
+			memoVO.setAtchFileGrpupNo(atchFileGroupNo);
+
+			Result res = memoService.addMemo(memoVO);
+			if (!res.equals(Result.OK)) {
+				response.put("status", "failed");
+				response.put("message", "Failed to add memo");
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			}
+
+			// 성공 응답 구성
+			response.put("status", "success");
+			response.put("memoNm", memoVO.getMemoNm());
+			response.put("memoCn", memoVO.getMemoCn());
+			AttachFileGroupVO attachFileGroupVO = fileService.getAttachFileGroup(atchFileGroupNo);
+			AttachFileVO attachFileVO = attachFileGroupVO.getAttachFileList().get(0);
+
+			response.put("imgFile", attachFileGroupVO); // 클라이언트에 전달할 이미지정보
+			response.put("imgFilePath", attachFileVO.getAtchFilePath());
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("status", "error");
+			response.put("message", "Server error occurred");
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
+	@GetMapping("/displayFile")
+	public ResponseEntity<byte[]> displayFile(@RequestParam("path") String path) {
+	    log.info("Requested file path: {}", path);
+	    if (path == null || path.equals("undefined")) {
+	        log.warn("Invalid file path received: {}", path);
+	        return ResponseEntity.badRequest().build();
+	    }
+	    return fileUtil.getFileEntity(path, false);
+	}
+	
+//	@PreAuthorize("hasRole('ROLE_MEMBER')")
+//	@GetMapping("/getNotes")
+//	@ResponseBody
+//	public ResponseEntity<List<MemoVO>> getNotesList() {
+//	    	
+//		CustomUser customUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//		EmployeeVO employeeVO = customUser.getEmployeeVO();
+//	    List<MemoVO> list = memoService.getNotesList(employeeVO.getEmplNo());
+//
+//	    return new ResponseEntity<>(list, HttpStatus.OK);
+//	}
+	@GetMapping("/getNotes")
+	@ResponseBody
+	public ResponseEntity<List<MemoVO>> getNotesList() {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    if (authentication == null || !authentication.isAuthenticated()) {
+	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	    }
+	    
+	    CustomUser user = (CustomUser) authentication.getPrincipal();
+	    EmployeeVO employeeVO = user.getEmployeeVO();
+	    
+	    List<MemoVO> list = memoService.getNotesList(employeeVO.getEmplNo());
+	    
+	    // 각 메모의 첨부 파일 경로 설정
+	   
+	    	log.info("msg", list);
+	    return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+	
+
+
+}

@@ -1,0 +1,29 @@
+package kr.or.ddit.groupware.service.schedule;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.schedule.IScheduleMapper;
+import kr.or.ddit.groupware.vo.ScheduleVO;
+
+/**
+ * 일정 관리 서비스 구현체
+ * @author 권예은
+ * @version 1.0
+ * @see ScheduleServiceImpl
+ */
+@Service
+public class ScheduleServiceImpl implements IScheduleService{
+
+	@Inject
+	private IScheduleMapper scheduleMapper;
+	
+	@Override
+	public List<ScheduleVO> getScheduleListByEmplNo(int emplNo) {
+		return scheduleMapper.getScheduleListByEmplNo(emplNo);
+	}
+
+}

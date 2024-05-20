@@ -1,0 +1,8 @@
+package kr.or.ddit.groupware.vo;
+
+import java.util.List;
+
+public class BoardVO {
+
+	List<AnswerVO> commentList;
+}

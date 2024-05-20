@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.rental;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 예약 및 대여 컨트롤러
+ * @author <strong>민경선</strong>
+ * @version 1.0
+ * @see RentalController
+ */
+@Controller
+@RequestMapping("/rental")
+public class RentalController {
+
+}

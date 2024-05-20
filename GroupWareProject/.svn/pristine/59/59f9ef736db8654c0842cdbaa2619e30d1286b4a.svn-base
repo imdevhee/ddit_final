@@ -1,0 +1,20 @@
+package kr.or.ddit.groupware.controller.conn;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 로그인 컨트롤러
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see LoginController
+ */
+@Controller
+@RequestMapping("/")
+public class LoginController {
+
+	@RequestMapping("/login")
+	public String login() {
+		return "login";
+	}
+}

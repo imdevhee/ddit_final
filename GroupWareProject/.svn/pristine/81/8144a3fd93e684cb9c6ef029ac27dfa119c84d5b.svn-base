@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.employee;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 사원 컨트롤러
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see EmplyoeeController
+ */
+@Controller
+@RequestMapping("/profile")
+public class EmplyoeeController {
+
+}

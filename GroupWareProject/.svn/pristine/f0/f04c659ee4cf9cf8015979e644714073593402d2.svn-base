@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.chat;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 채팅 컨트롤러
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see ChatController
+ */
+@Controller
+@RequestMapping("/chat")
+public class ChatController {
+
+}

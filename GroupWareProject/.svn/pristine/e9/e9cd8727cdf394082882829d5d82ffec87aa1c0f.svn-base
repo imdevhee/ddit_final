@@ -1,0 +1,5 @@
+package kr.or.ddit.groupware.service.addressbook;
+
+public class AddressBookServiceImpl implements IAddressBookService  {
+
+}

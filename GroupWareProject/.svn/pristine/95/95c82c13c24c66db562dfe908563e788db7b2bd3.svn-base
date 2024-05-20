@@ -1,0 +1,92 @@
+package kr.or.ddit.groupware.controller.employee;
+
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 사원 컨트롤러
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see EmployeeController
+ */
+@Controller
+@RequestMapping("/profile")
+public class EmplyoeeController {
+
+	@Inject
+	private IEmployeeService service;
+	
+	/**
+	 * 프로필 수정 폼 (select)
+	 * @author 최소희
+	 * @param model
+	 * @return 프로필 수정 폼
+	 */
+	@GetMapping(value = "/form")
+	public String selectEmployee(Model model) {
+		int emplNo = 1;
+		EmployeeVO employeeVO = service.selectEmployee(emplNo);
+		System.out.println("프로필폼에 넣을 거 : " + employeeVO);
+		model.addAttribute("employee",employeeVO);
+		return "main/profile";
+	}
+	
+	/**
+	 * 프로필 수정 프로세스 (update)
+	 * @author 최소희
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/modify")
+	public String profileModify(Model model, EmployeeVO employeeVO, RedirectAttributes ra) {
+		int emplNo = 1;
+		employeeVO.setEmplNo(emplNo);
+		Result result = service.updateEmployee(employeeVO);
+		if(result.equals(Result.OK)) {
+			ra.addFlashAttribute("message","수정이 완료되었습니다!");
+			return "redirect:form";
+		}else {
+			ra.addFlashAttribute("message","수정이 실패하였습니다!");
+			return "redirect:form";
+		}
+	}
+	
+	/**
+	 * 패스워드 일치 확인 프로세스 (count)
+	 * @author 최소희
+	 * @param map
+	 * @return result 입력 패스워드의 존재 여부
+	 */
+	@PostMapping(value = "/pwCheck")
+	public ResponseEntity<String> PwCheck(@RequestBody Map<String, String> map) {
+		int emplNo = 1;
+		String emplPassword = map.get("emplPassword");
+		
+		EmployeeVO employeeVO = new EmployeeVO();
+		employeeVO.setEmplNo(emplNo);
+		employeeVO.setEmplPassword(emplPassword);
+		
+		Result result = service.pwCheck(employeeVO);
+		
+		if(result.equals(Result.EXIST)) {
+			return new ResponseEntity<String> ("EXIST", HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String> ("NOTEXIST", HttpStatus.OK);
+		}
+	}
+}

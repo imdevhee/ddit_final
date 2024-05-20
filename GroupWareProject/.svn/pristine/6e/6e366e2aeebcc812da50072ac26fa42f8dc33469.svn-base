@@ -1,0 +1,278 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="${pageContext.request.contextPath }/resources/project/css/source/tui-pagination.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath }/resources/project/css/source/tui-grid.min.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath }/resources/project/css/source/apexcharts.min.css">
+
+<div class="card position-relative overflow-hidden rounded-0">
+	<div class="shop-part d-flex w-100">
+		<div class="flex-fill">
+			<div class="px-9 pt-4 pb-3">
+				<a href="/admin/documents/stat">
+					<h3 class="mb-4" style="font-weight: 600; margin-left: 10px;">
+						<i class="fa-duotone fa-users fa-fw"></i> 프로젝트 통계
+					</h3>
+				</a>
+			</div>
+			<div class="container-fluid positon-relative flex-fill mt-4">
+				<div class="card bg-white">
+					<div class="card-body p-5">
+						<div class="w-100">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="d-flex align-items-start gap-6 mb-2">
+										<h5 class="fs-5 mb-0 d-none fw-semibold d-lg-block flex-grow-1" data-title="">전체 프로젝트</h5>
+									</div>
+									<div id="grid"></div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-9">
+									<div class="row">
+										<div class="col-md-12">
+											<p id="prjctTitle" class="fw-semibold fs-6 mb-1"></p>
+										</div>
+										<div class="col-md-8">
+											<div id="charts"></div>
+										</div>
+										<div class="col-md-4">
+											<div id="charts2"></div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card">
+										<div class="card-body rounded-0">
+											<div class="px-9 pt-4 pb-3">
+												<h3 class="mb-4" style="font-weight: 600; margin-left: 10px;">
+													<i class="fa-solid fa-user fa-fw"></i> 프로젝트 참여자
+												</h3>
+												<div class="d-inline-block position-relative ps-4" id="profileArea"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="${pageContext.request.contextPath }/resources/project/js/source/tui-code-snippet.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/source/tui-pagination.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/source/tui-grid.min.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/source/apexcharts.min.js"></script>
+<script>
+let data = JSON.parse('${projectList}'.replaceAll(/\n/g, ''));
+gridInit(data);
+
+function createTaskChart(prjctNo) {
+	
+	$('#charts').html('');
+	
+	$.ajax({
+		url: '/admin/project/tasktype',
+		type: 'get',
+		data: {prjctNo : prjctNo}
+	})
+	.done(function(res) {
+		
+		var options = {
+		    chart: {
+		        type: 'donut',
+		        events: {
+		        	dataPointSelection: function(e, chartContext, config) {
+		                let taskType = options.labels[config.dataPointIndex];
+		                createTaskDetailChart(taskType);
+		        	}
+		        },
+		        foreColor: '#333', // 텍스트 색상 설정
+		        height: 400,
+		        toolbar: {
+		            show: false // 상단 툴바 숨김
+		        },
+		        animations: {
+		            enabled: true,
+		            easing: 'easeinout',
+		            speed: 400,
+		            animateGradually: {
+		                enabled: true,
+		                delay: 150
+		            },
+		            dynamicAnimation: {
+		                enabled: true,
+		                speed: 350
+		            }
+		        }
+		    },
+		    series: res.map(data => data.count),
+		    labels: res.map(data => data.taskType),
+		    colors: ['#FF6384', '#36A2EB', '#FFCD56'],
+		    plotOptions: {
+		        pie: {
+		            donut: {
+		                labels: {
+		                    show: true,
+		                    total: {
+		                        show: true,
+		                        label: '전체',
+		                        formatter: function (w) {
+		                            // 전체 합계를 계산하여 반환
+		                            return w.globals.seriesTotals.reduce((a, b) => {
+		                                return a + b
+		                            }, 0)
+		                        }
+		                    }
+		                }
+		            }
+		        }
+		    },
+		    legend: {
+		        position: 'bottom', // 범례 위치 설정
+		        horizontalAlign: 'center', // 범례 정렬 설정
+		        fontSize: '14px', // 범례 폰트 크기 설정
+		        markers: {
+		            width: 10,
+		            height: 10
+		        }
+		    },
+		    responsive: [{
+		        breakpoint: 480,
+		        options: {
+		            chart: {
+		                width: 300 // 반응형 디자인에서의 차트 크기 조정
+		            },
+		            legend: {
+		                position: 'bottom' // 반응형 디자인에서 범례 위치 조정
+		            }
+		        }
+		    }]
+		};
+		
+	    var chart = new ApexCharts(document.querySelector("#charts"), options);
+	    chart.render();
+	})
+}
+
+function createTaskDetailChart(taskType) {
+	$.get('/admin/project/taskdetail')
+	.done(function(res) {
+		console.log(res);
+	})
+}
+
+function gridInit(data) {
+	$('#grid').html('');
+	
+	tui.Grid.applyTheme('clean', {
+		cell: {
+		   normal: {
+		     border: '#fff',
+		     showVerticalBorder: false,
+		     showHorizontalBorder: false,
+		   },
+		   header: {
+		     border: '#ddd',
+		     showVerticalBorder: false,
+		     showHorizontalBorder: false,
+		   },
+		   rowHeader: {
+				border: '#fff',
+			     showVerticalBorder: false,
+			     showHorizontalBorder: false,
+		   }
+		},
+	});
+	tui.Grid.setLanguage('ko', {
+		display: {
+            noData: '검색 결과가 존재하지 않습니다.',
+            loadingData: '로딩중입니다...',
+		}
+	});
+	
+	grid = new tui.Grid({
+	    el: document.getElementById('grid'),
+	    data: data,
+	    scrollX: false,
+	    scrollY: false,
+	    header: {
+	        height: 30, 
+	    },
+	    columns: 
+	    [
+	      {
+	        header: 'id',
+	        name: 'prjctNo',
+	        hidden: true
+	      },
+	      {
+	        header: '프로젝트 명',
+	        name: 'prjctNm',
+	        width: '200',
+	        resizable: true,
+	      },
+	      {
+	        header: '프로젝트내용',
+	        width: '900',
+	        name: 'prjctCn',
+	        resizable: true,
+	      },
+	      {
+	        header: '시작일자',
+	        width: '200',
+	        name: 'bgnDateString',
+	        resizable: true,
+	      },
+	      {
+	        header: '종료일자',
+	        width: '200',
+	        name: 'endDateString',
+	        resizable: true,
+	      }
+	    ],
+	    pageOptions: {
+	      useClient: true,
+	      perPage: 5,
+	      visiblePages: 5,
+	      centerAlign: false
+	    },
+	    bodyHeight: 'fitToParent',
+	    rowHeight: 30
+	});
+	
+	grid.on('click', ev => {
+		if(ev.targetType == 'cell') {
+			let project = grid.getRow(ev.rowKey);
+			$('#prjctTitle').text(project.prjctNm).css('color', project.prjctColorCode);
+			
+			getProjectDetail(project.prjctNo);
+		}
+	})
+}
+
+function getProjectDetail(prjctNo) {
+	createTaskChart(prjctNo);
+	getProjectParticipants(prjctNo)
+}
+
+function getProjectParticipants(prjctNo) {
+	$.ajax({
+		url: '/admin/project/participants',
+		type: 'get',
+		data: {prjctNo : prjctNo}
+	})
+	.done(function(res) {
+		let html = '';
+		for(let i in res) {
+			html += '<div class="mb-2">';
+			html += '	<img class="rounded-circle" width="32" height="32" src="/profile/view/'+res[i].emplProflPhoto+'">';
+			html += '	<span class="fw-semibold">'+res[i].emplNm+'</span>';
+			html += '	<span class="">'+res[i].clsfNm+'</p>';
+			html += '</div>';
+		}
+		$('#profileArea').html(html);
+	});
+}
+</script>

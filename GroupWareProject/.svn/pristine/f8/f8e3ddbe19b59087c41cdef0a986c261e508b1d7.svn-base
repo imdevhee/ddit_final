@@ -1,0 +1,50 @@
+package kr.or.ddit.groupware.service.addressbook;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.addressbook.IAddressBookMapper;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.AddressBookVO;
+
+/**
+ * 주소록 서비스 구현체
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see AddressBookServiceImpl
+ */
+@Service
+public class AddressBookServiceImpl implements IAddressBookService  {
+	
+	@Inject
+	private IAddressBookMapper mapper;
+	
+	@Override
+	public List<AddressBookVO> selectEmployeeAddressList() {
+		
+		return mapper.selectEmployeeAddressList();
+	}
+
+	@Override
+	public int totalEmployeeCnt() {
+		return mapper.totalEmployeeCnt();
+	}
+
+	@Override
+	public Result insertAddress(AddressBookVO addressBookVO) {
+		Result result = null;
+		int status = mapper.insertAddress(addressBookVO);
+		
+		if(status > 0 ) {	// 주소록 인서트 성공
+			result = Result.OK;
+		}
+		else { // 주소록 인서트 실패
+			result = Result.FAILED;
+		}
+		return result;
+	}
+	
+}

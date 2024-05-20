@@ -1,0 +1,18 @@
+package kr.or.ddit.groupware.controller.schedule;
+
+import kr.or.ddit.groupware.mapper.schedule.IScheduleMapper;
+import kr.or.ddit.groupware.service.schedule.IScheduleService;
+import kr.or.ddit.groupware.service.schedule.ScheduleServiceImpl;
+
+/**
+ * 일정 컨트롤러
+ * @author <strong>권예은</strong>
+ * @version 1.0
+ * @see SchduleController
+ * @see IScheduleService
+ * @see ScheduleServiceImpl
+ * @see IScheduleMapper 
+ */
+public class SchduleController {
+
+}

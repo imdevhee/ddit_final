@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.service.mail;
+
+/**
+ * 메일 서비스 구현체
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see MailServiceImpl
+ */
+public class MailServiceImpl implements IMailService {
+
+}

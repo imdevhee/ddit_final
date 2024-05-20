@@ -1,0 +1,14 @@
+package kr.or.ddit.groupware.service.project;
+
+import org.springframework.stereotype.Service;
+
+/**
+ * 프로젝트 서비스 구현체
+ * @author <strong>권예은</strong>
+ * @version 1.0
+ * @see ProjectServiceImpl
+ */
+@Service
+public class ProjectServiceImpl implements IProjectService {
+
+}

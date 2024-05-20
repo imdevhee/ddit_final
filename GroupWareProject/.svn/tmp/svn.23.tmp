@@ -1,0 +1,12 @@
+package kr.or.ddit.groupware.service.schedule;
+
+
+/**
+ * 일정 관리 서비스 구현체
+ * @author 권예은
+ * @version 1.0
+ * @see SchduleController
+ */
+public class ScheduleServiceImpl implements IScheduleService{
+
+}

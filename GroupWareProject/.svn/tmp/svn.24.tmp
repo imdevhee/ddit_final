@@ -1,0 +1,12 @@
+package kr.or.ddit.groupware.mapper.schedule;
+
+
+/**
+ * 일정 관리 SQL Mapper
+ * @author 권예은
+ * @version 1.0
+ * @see SchduleController
+ */
+public interface IScheduleMapper {
+
+}

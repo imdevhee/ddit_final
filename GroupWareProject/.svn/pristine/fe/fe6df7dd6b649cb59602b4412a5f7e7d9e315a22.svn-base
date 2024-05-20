@@ -1,0 +1,107 @@
+package kr.or.ddit.groupware.util;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.inject.Inject;
+
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.or.ddit.groupware.service.notification.INotificationService;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+import kr.or.ddit.groupware.vo.NotificationVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Component
+@Slf4j
+public class NotificationUtil {
+
+	@Inject
+	private INotificationService notiService;
+
+	public final Map<Integer, SseEmitter> emitterMap = new ConcurrentHashMap<>();
+	public EmployeeVO employeeVO;
+
+	ObjectMapper mapper = new ObjectMapper();
+
+	public SseEmitter findEmitterByEmplNo(int emplNo) {
+		return emitterMap.get(emplNo);
+	}
+
+	@Scheduled(cron = "0 * * * * *")
+	public void run() {
+		if (employeeVO == null) {
+			return;
+		}
+		sendNoti(employeeVO.getEmplNo());
+	}
+
+	public SseEmitter addSseEmitter(SseEmitter emitter) {
+		this.emitterMap.put(employeeVO.getEmplNo(), emitter);
+
+		log.debug("### 사용자 => " + employeeVO.getEmplNm());
+		log.debug("### Emitter Map SIZE >> " + emitterMap.size());
+		log.debug("### Emitter Map VALUE >> " + emitterMap);
+
+		return emitter;
+	}
+
+	public void deleteEmitter(int emplNo) {
+		SseEmitter deleteItem = this.emitterMap.remove(emplNo);
+		System.out.println("### emplNo : deleteItem => " + emplNo + " : " + deleteItem);
+	}
+
+	public void runComplete(int emplNo) {
+		SseEmitter timeOutEmitter = this.emitterMap.get(emplNo);
+		timeOutEmitter.complete();
+		System.out.println("### emitter_complete => " + emplNo);
+	}
+
+	public void sendNoti(int emplNo) {
+
+		SseEmitter emitter = findEmitterByEmplNo(emplNo);
+		if (emitter == null) {
+			System.out.println("### Emitter IS NULL");
+			return;
+		}
+
+		List<NotificationVO> notiList = notiService.selectNotiList(emplNo);
+		try {
+			if (notiList.size() > 0) {
+				for (NotificationVO notificationVO : notiList) {
+					LocalDateTime reservationTime = notificationVO.getLocalDt();
+					LocalDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+
+//			        System.out.println("### 보냈냐? : " + notificationVO.getNtcnSendYn());
+//					System.out.println("### DB 알림 연도 : 현재 연도 => " + reservationTime.getYear() + " : " + currentTime.getYear());
+//					System.out.println("### DB 알림 달 : 현재 달 => " + reservationTime.getMonth() + " : " + currentTime.getMonth());
+//					System.out.println("### DB 알림 일자 : 현재 일자 => " + reservationTime.getDayOfMonth() + " : " + currentTime.getDayOfMonth());
+//					System.out.println("### DB 알림 시간 : 현재 시간 => " + reservationTime.getHour() + " : " + currentTime.getHour());
+//					System.out.println("### DB 알림 분 : 현재 분 => " + reservationTime.getMinute() + " : " + currentTime.getMinute());
+
+					if (notificationVO.getNtcnSendYn().equals("N") && reservationTime.getYear() == currentTime.getYear()
+							&& reservationTime.getMonth().equals(currentTime.getMonth())
+							&& reservationTime.getDayOfMonth() == currentTime.getDayOfMonth()
+							&& reservationTime.getHour() == currentTime.getHour()
+							&& (reservationTime.getMinute() == currentTime.getMinute()
+									|| reservationTime.getMinute() == currentTime.getMinute() - 1)) {
+						emitter.send(SseEmitter.event().data(mapper.writeValueAsString(notificationVO),
+								MediaType.TEXT_EVENT_STREAM));
+						notiService.updateNotiSendYn(notificationVO.getNtcnNo());
+					}
+				}
+			}
+		} catch (Exception e) {
+			emitter.completeWithError(e);
+		}
+	}
+}

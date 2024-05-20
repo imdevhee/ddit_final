@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.mapper.project;
+
+/**
+ * 프로젝트 SQL Mapper
+ * @author 권예은
+ * @version 1.0
+ * @see IProjectMapper
+ */
+public interface IProjectMapper {
+
+}

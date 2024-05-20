@@ -1,0 +1,15 @@
+package kr.or.ddit.groupware.vo;
+
+import lombok.Data;
+
+@Data
+public class ClassOfPositionVO {
+	 private int clsfCode;
+	 private String clsfNm;
+	 private int clsfLevel;
+	 private String useYn;
+	 private String rgsde;
+	 private int register;
+	 private String updde;
+	 private int updusr;
+}

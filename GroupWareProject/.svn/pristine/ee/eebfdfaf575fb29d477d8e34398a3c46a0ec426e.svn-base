@@ -1,0 +1,62 @@
+package kr.or.ddit.groupware.service.board;
+
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.board.IBoardMapper;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.BoardVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 게시판 서비스 구현체
+ * @author <strong>최윤서</strong>
+ * @version 1.0
+ * @see BoardServiceImpl
+ */
+
+@Service
+public class BoardServiceImpl implements IBoardService {
+
+	@Inject
+	private IBoardMapper boardMapper;
+	
+	
+	@Override
+	public List<BoardVO> selectBoardList() {
+		return boardMapper.selectBoardList();
+	}
+
+
+	@Override
+	public BoardVO selectBoard(int boNo) {
+		boardMapper.selectBoard(boNo);
+		return null;
+	}
+
+
+	@Override
+	public void insert(BoardVO boardVO) {
+		boardMapper.insert(boardVO);
+	}
+
+
+	@Override
+	public Result insertBoard(HttpServletRequest req, BoardVO boardVO) {
+		Result result = null;
+		
+		int status = boardMapper.insertBoard(boardVO);
+		
+		if(status > 0) {
+			result = Result.OK;
+		}else {
+			result = Result.FAILED;
+		}
+		return result;  
+	}
+
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.approval.IApprovalMapper">
+
+	<select id="selectApprovalList" parameterType="string" resultType="approvalVO">
+		select
+		aprovl_no
+		, doc_frm_no
+		, empl_no
+		, aprovl_nm
+		, aprovl_cn
+		, aprovl_memo
+		, aprovl_type_code
+		, aprovl_sttus_code
+		, aprovl_ipcr
+		, emrgncy_yn
+		, submit_dt
+		, clos_dt
+		, atch_file_grpup_no
+		from approval
+	</select>
+
+	<select id="selectOragnTree" resultType="organizationTreeVO">
+		SELECT CMMN_CODE id
+			, CMMN_CODE_NAME1 text
+			, NVL(CMMN_CODE_OPTION1, '#') parent
+		FROM COMM_CODE
+		WHERE CMMN_GROUP_CODE LIKE '%' || 'D' || '%'
+		AND USE_YN = 'Y'
+		START WITH CMMN_CODE_OPTION1 IS NULL
+		CONNECT BY PRIOR CMMN_CODE = CMMN_CODE_OPTION1
+		ORDER SIBLINGS BY CMMN_CODE
+	</select>
+	
+</mapper>

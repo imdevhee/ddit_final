@@ -1,0 +1,27 @@
+package kr.or.ddit.groupware.mapper.chat;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.vo.ChatListVO;
+import kr.or.ddit.groupware.vo.MessageGroupParticipantVO;
+import kr.or.ddit.groupware.vo.MessageGroupVO;
+
+/**
+ * 채팅 SQL Mapper
+ * @author 이명문
+ * @version 1.0
+ * @see IChatMapper
+ */
+public interface IChatMapper {
+
+	List<ChatListVO> selectChatList(int emplNo);
+
+	int createChatGroup(MessageGroupVO messageGroupVO);
+
+	void enterChatGroup(MessageGroupParticipantVO messageGroupParticipantVO);
+
+	String getEmplName(int friendEmplNo);
+
+	List<ChatListVO> selectTalkList(int emplNo);
+
+}

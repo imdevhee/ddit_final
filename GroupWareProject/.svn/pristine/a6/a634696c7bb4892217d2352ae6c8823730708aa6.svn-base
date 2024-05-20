@@ -1,0 +1,41 @@
+package kr.or.ddit.groupware.service.attach;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.attach.IAttachFileMapper;
+import kr.or.ddit.groupware.vo.AttachFileGroupVO;
+import kr.or.ddit.groupware.vo.AttachFileVO;
+
+@Service
+public class AttachFileServiceImpl implements IAttachFileService {
+	
+	@Inject
+	private IAttachFileMapper attachFileMapper;
+	
+	public int insertAttachFileGroup() {
+		AttachFileGroupVO attachFileGroupVO = new AttachFileGroupVO();
+		int result = attachFileMapper.insertAttachFileGroup(attachFileGroupVO);
+		
+		if(result > 0) {
+			return attachFileGroupVO.getAtchFileGroupNo();
+		}else {
+			throw new RuntimeException();
+		}
+	}
+
+	@Override
+	public void insertSavedFile(AttachFileVO attachFileVO) {
+		int result = attachFileMapper.insertSavedFile(attachFileVO);
+		
+		if(result <= 0) {
+			throw new RuntimeException();
+		}
+	}
+
+	@Override
+	public AttachFileGroupVO getAttachFileGroup(int attachFileGroupNo) {
+		return attachFileMapper.getAttachFileGroup(attachFileGroupNo);
+	}
+}

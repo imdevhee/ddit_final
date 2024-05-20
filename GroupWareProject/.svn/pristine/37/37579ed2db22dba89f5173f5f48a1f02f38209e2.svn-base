@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.addressbook.IAddressBookMapper">
+	
+	
+	
+	
+	<resultMap type="addressBookVO" id="addressBookMap">
+		<result property="adbkNo" column="adbk_no" />
+		<result property="emplNo" column="empl_no" />
+		<result property="adbkEmpl" column="adbk_empl" />
+		<result property="adbkNm" column="adbk_nm" />
+		<result property="adbkCmpny" column="adbk_cmpny" />
+		<result property="adbkDept" column="adbk_dept" />
+		<result property="adbkClsf" column="adbk_clsf" />
+		<result property="adbkEmail" column="adbk_email" />
+		<result property="adbkTelno" column="adbk_telno" />
+		<result property="adbkMemo" column="adbk_memo" />
+		<result property="adbkCode" column="adbk_code" />
+	</resultMap>
+
+	
+	<select id="selectEmployeeAddressList" resultType="addressBookVO">
+		SELECT
+		    ADBK_NO,
+		    EMPL_NO,
+		    ADBK_EMPL,
+		    ADBK_NM,
+		    ADBK_CMPNY,
+		    ADBK_DEPT,
+		    ADBK_CLSF,
+		    ADBK_EMAIL,
+		    ADBK_TELNO,
+		    ADBK_MEMO,
+		    c_code.cmmn_code_name1 AS ADBK_CODE
+		FROM
+		    ADDRESSBOOK
+		LEFT JOIN
+		    COMM_CODE c_code ON ADDRESSBOOK.ADBK_CODE = c_code.cmmn_code
+		order by ADBK_NO desc
+	</select>
+	
+	<select id="totalEmployeeCnt" resultType="int">
+		SELECT COUNT(*)
+		FROM employee
+	</select>
+</mapper>

@@ -1,0 +1,216 @@
+package kr.or.ddit.groupware.controller.employee;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import kr.or.ddit.groupware.service.attach.IAttachFileService;
+import kr.or.ddit.groupware.service.employee.IDeptService;
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.util.FileUtil;
+import kr.or.ddit.groupware.vo.ClassOfPositionVO;
+import kr.or.ddit.groupware.vo.DeptVO;
+import kr.or.ddit.groupware.vo.EmailReceptionVO;
+import kr.or.ddit.groupware.vo.EmailVO;
+import kr.or.ddit.groupware.vo.EmpAuthorityVO;
+import kr.or.ddit.groupware.vo.EmployeeDetailVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+import kr.or.ddit.groupware.vo.PaginationInfoVO;
+
+/**
+ * 사원관리 컨트롤러
+ * 
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see ManagementController
+ */
+@Controller
+@RequestMapping("/employee")
+public class ManagementController {
+	
+	@Inject
+	private IEmployeeService service;
+	
+	@Inject
+	private IDeptService deptService;
+	
+	@Inject
+	private FileUtil fileUtil;
+
+	@Inject
+	private IAttachFileService attachFileService;
+
+	@Resource(name = "path")
+	private String resourcePath;
+	
+	/**
+	 * 프로필 사진 view
+	 * 
+	 * @param path
+	 * @return
+	 */
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@GetMapping("/view/{path}")
+	public ResponseEntity<byte[]> downloadFile(@PathVariable String path) {
+		path = resourcePath + "employee/" + path;
+		System.out.println("이미지 주소 : " + path);
+		ResponseEntity<byte[]> entity = null;
+		File file = new File(path);
+		if (file.exists()) {
+			entity = fileUtil.getFileEntity(path, false); // false view, true download
+		}
+
+		return entity;
+	}
+	
+	/**
+	 * 정상 사원 리스트
+	 * @author 최소희
+	 * @param currentPage
+	 * @param searchType
+	 * @param searchWord
+	 * @param model
+	 * @return
+	 */
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@GetMapping("/normalManagement")
+	public String NormalEmployeeList(
+			@RequestParam(name="page", required = false, defaultValue = "1") int currentPage,
+			@RequestParam(required = false, defaultValue = "all") String searchType,
+			@RequestParam(required = false) String searchWord,
+			Model model) {
+		
+		PaginationInfoVO<EmployeeVO> pagingVO = new PaginationInfoVO<EmployeeVO>();
+		
+		// 검색이 이뤄지면 아래가 실행됨
+		// 검색이 이뤄졌다는 걸 정확하게 확인하기 위해서는 searchWord가 비어있지 않을 때
+		if(StringUtils.isNotBlank(searchWord)) {
+			pagingVO.setSearchType(searchType);
+			pagingVO.setSearchWord(searchWord);
+			model.addAttribute("searchType", searchType);
+			model.addAttribute("searchWord", searchWord);
+		}
+		
+		// startRow, endRow, startPage, endPage를 설정
+		pagingVO.setCurrentPage(currentPage);
+		
+		// 사원 이용상태 추가
+		pagingVO.setEnabled(1);
+		
+		// totalRecord라는 총 게시글 수
+		int totalRecord = service.emplListCount(pagingVO);
+		pagingVO.setTotalRecord(totalRecord);	// totalPage 설정
+		
+		List<EmployeeVO> dataList = service.selectEmplList(pagingVO);
+		pagingVO.setDataList(dataList);
+		
+		List<EmpAuthorityVO> authList = new ArrayList<EmpAuthorityVO>();
+		
+		for (EmployeeVO employeeVO : dataList) {
+			authList = service.selectAuthList(employeeVO.getEmplNo());
+			employeeVO.setAuthList(authList);
+		}
+		
+		model.addAttribute("pagingVO",pagingVO);
+		
+		return "employee/normalManagement";
+	}
+	
+	/**
+	 * 중지 사원 리스트
+	 * @author 최소희
+	 * @param currentPage
+	 * @param searchType
+	 * @param searchWord
+	 * @param model
+	 * @return
+	 */
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	@GetMapping("/stopManagement")
+	public String StopEmployeeList(
+			@RequestParam(name="page", required = false, defaultValue = "1") int currentPage,
+			@RequestParam(required = false, defaultValue = "all") String searchType,
+			@RequestParam(required = false) String searchWord,
+			Model model) {
+		
+		PaginationInfoVO<EmployeeVO> pagingVO = new PaginationInfoVO<EmployeeVO>();
+		
+		// 검색이 이뤄지면 아래가 실행됨
+		// 검색이 이뤄졌다는 걸 정확하게 확인하기 위해서는 searchWord가 비어있지 않을 때
+		if(StringUtils.isNotBlank(searchWord)) {
+			pagingVO.setSearchType(searchType);
+			pagingVO.setSearchWord(searchWord);
+			model.addAttribute("searchType", searchType);
+			model.addAttribute("searchWord", searchWord);
+		}
+		
+		// startRow, endRow, startPage, endPage를 설정
+		pagingVO.setCurrentPage(currentPage);
+		
+		// 사원 이용상태 추가
+		pagingVO.setEnabled(0);
+		
+		// totalRecord라는 총 게시글 수
+		int totalRecord = service.emplListCount(pagingVO);
+		pagingVO.setTotalRecord(totalRecord);	// totalPage 설정
+		
+		List<EmployeeVO> dataList = service.selectEmplList(pagingVO);
+		pagingVO.setDataList(dataList);
+		
+		List<EmpAuthorityVO> authList = new ArrayList<EmpAuthorityVO>();
+		
+		for (EmployeeVO employeeVO : dataList) {
+			authList = service.selectAuthList(employeeVO.getEmplNo());
+			employeeVO.setAuthList(authList);
+		}
+		
+		model.addAttribute("pagingVO",pagingVO);
+		
+		return "employee/stopManagement";
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+	@GetMapping("/form")
+	public String employeeForm(Model model) {
+		List<DeptVO> deptList = deptService.selectDeptList();
+		List<ClassOfPositionVO> clsfList = service.selectClsfList();
+		
+		model.addAttribute("deptList", deptList);
+		model.addAttribute("clsfList", clsfList);
+		
+		return "employee/employeeForm";
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+	@PostMapping("/insert")
+	public String employeeForm(
+			List<MultipartFile> imgFile, List<MultipartFile> signFile, EmployeeVO employeeVO
+			) {
+		System.out.println("@@프로필"+imgFile);
+		System.out.println("@@서명"+signFile);
+		System.out.println("@@임플로이"+employeeVO);
+		
+		return "redirect:form";
+	}
+	
+	
+	
+}

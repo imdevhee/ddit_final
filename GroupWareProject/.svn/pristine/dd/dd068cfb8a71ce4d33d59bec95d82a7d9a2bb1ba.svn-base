@@ -1,0 +1,69 @@
+@charset "UTF-8";
+
+.side-stick {
+	width: 3px;
+	height: 20px;
+ 	position: absolute;
+	margin-right:10px;
+}
+
+body .scrumboard .card .card-body{
+  padding: 10px;
+}
+
+.task-summary {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+/*   padding-right: 10px; */
+}
+
+.project-task-sub-title {
+	padding-left: 15px;
+}
+
+.accordion-button {
+  padding: 0;
+  padding-bottom: 10px;
+}
+
+body .task-list-container {
+  width : 23%;
+}
+
+body .scrumboard .card .card-body .task-body .task-bottom {
+    flex-direction: column;
+}
+
+.accordion-body {
+  padding: 0;
+}
+
+.accordion-button::after {
+    content : none;
+}
+
+.project-mini-body-section{
+  width: 100%; 
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  
+}
+
+.project-mini-body-content {
+  color: black;
+  font-weight: 600;
+}
+
+.project-mini-button {
+  margin-top:15px;
+  padding: 5px;
+  width: 100%;
+  text-align: center;
+  color: #fff !important;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+

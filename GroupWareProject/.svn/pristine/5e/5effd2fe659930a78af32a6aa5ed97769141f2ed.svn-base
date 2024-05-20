@@ -1,0 +1,17 @@
+package kr.or.ddit.groupware.service.schedule;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.vo.ScheduleVO;
+
+/**
+ * 일정 관리 서비스 인터페이스
+ * @author 권예은
+ * @version 1.0
+ * @see IScheduleService
+ */
+public interface IScheduleService {
+
+	List<ScheduleVO> getScheduleListByEmplNo(int emplNo);
+
+}

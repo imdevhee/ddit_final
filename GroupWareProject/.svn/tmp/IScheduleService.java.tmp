@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.service.schedule;
+
+<<<<<<< .mine
+
+||||||| .r403025
+=======
+>>>>>>> .r403117
+/**
+ * 일정 관리 서비스 인터페이스
+ * @author 권예은
+ * @version 1.0
+ * @see IScheduleService
+ */
+public interface IScheduleService {
+
+}

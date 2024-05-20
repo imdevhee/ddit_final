@@ -1,0 +1,99 @@
+package kr.or.ddit.groupware.service.chat;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.or.ddit.groupware.mapper.chat.IChatMapper;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.ChatListVO;
+import kr.or.ddit.groupware.vo.CustomUser;
+import kr.or.ddit.groupware.vo.MessageGroupParticipantVO;
+import kr.or.ddit.groupware.vo.MessageGroupVO;
+
+/**
+ * 채팅 서비스 구현체
+ * 
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see ChatServiceImpl
+ */
+
+@Service
+public class ChatServiceImpl implements IChatService {
+
+	@Inject
+	private IChatMapper chatMapper;
+
+	@Override
+	public List<ChatListVO> selectChatList(int emplNo) {
+		return chatMapper.selectChatList(emplNo);
+	}
+	
+	@Override
+	public List<ChatListVO> selectTalkList(int emplNo) {
+		return chatMapper.selectTalkList(emplNo);
+	}
+
+	@Transactional(rollbackFor = SQLException.class)
+	@Override
+	public Result createChatGroup(String obj) {
+		MessageGroupVO messageGroupVO = new MessageGroupVO();
+
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			
+			JsonNode node = mapper.readTree(obj);
+
+			messageGroupVO.setMssagGroupTypeCode("M102");
+
+			int cnt = chatMapper.createChatGroup(messageGroupVO);
+
+			if (cnt <= 0) {
+				throw new RuntimeException();
+			}
+			
+			CustomUser customUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			String myName = customUser.getEmployeeVO().getEmplNm();
+			
+			int friendEmplNo = node.get("friend").asInt();
+			
+			String friendName = chatMapper.getEmplName(friendEmplNo);
+					
+			node.fields().forEachRemaining(entry -> {
+				String chatName = "";
+				
+				JsonNode emplNo = entry.getValue();
+				
+				
+				if(entry.getKey().equals("friend")) {
+					chatName = myName + "님 과의 채팅방";
+				}else {
+					chatName = friendName + "님 과의 채팅방";
+				}
+				
+				MessageGroupParticipantVO messageGroupParticipantVO = new MessageGroupParticipantVO();
+				messageGroupParticipantVO.setMssagGroupNo(messageGroupVO.getMssagGroupNo());
+				messageGroupParticipantVO.setEmplNo(emplNo.asInt());
+				messageGroupParticipantVO.setMssagGroupNm(chatName);
+				
+				chatMapper.enterChatGroup(messageGroupParticipantVO);
+			});
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+
+}

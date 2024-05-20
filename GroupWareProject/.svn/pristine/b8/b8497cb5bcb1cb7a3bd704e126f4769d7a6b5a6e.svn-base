@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.addressbook;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 주소록 컨트롤러
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see AddressBookController
+ */
+@Controller
+@RequestMapping("/address")
+public class AddressBookController {
+	
+}

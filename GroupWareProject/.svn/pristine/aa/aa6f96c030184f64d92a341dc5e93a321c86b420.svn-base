@@ -1,0 +1,5 @@
+package kr.or.ddit.groupware.service.mail;
+
+public interface IMailService {
+
+}

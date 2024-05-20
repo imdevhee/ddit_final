@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.addressbook.IAddressBookMapper">
+	
+	
+	
+	
+	<resultMap type="addressBookVO" id="addressBookMap">
+		<result property="adbkNo" column="adbk_no" />
+		<result property="emplNo" column="empl_no" />
+		<result property="adbkEmpl" column="adbk_empl" />
+		<result property="adbkNm" column="adbk_nm" />
+		<result property="adbkCmpny" column="adbk_cmpny" />
+		<result property="adbkDept" column="adbk_dept" />
+		<result property="adbkClsf" column="adbk_clsf" />
+		<result property="adbkEmail" column="adbk_email" />
+		<result property="adbkTelno" column="adbk_telno" />
+		<result property="adbkMemo" column="adbk_memo" />
+		<result property="adbkCode" column="adbk_code" />
+	</resultMap>
+	
+	<resultMap type="addressGroupVO" id="addressGroupMap">
+		<result property="adbkGroupNo" column="adbk_group_no" />
+		<result property="emplNo" column="empl_no" />
+		<result property="adbkNm" column="adbk_nm" />
+	</resultMap>
+	
+	<resultMap type="addressGroupMappingVO" id="addressGroupMappingMap">
+		<result property="adbkGrpMpngNo" column="adbk_grp_mpng_no" />
+		<result property="adbkNo" column="adbk_no" />
+		<result property="adbkGrpNo" column="adbk_grp_no" />
+	</resultMap>
+
+
+	
+	<select id="selectEmployeeAddressList" resultType="addressBookVO" parameterType="int">
+		
+		SELECT
+		    ab.ADBK_NO,
+		    ab.EMPL_NO,
+		    ab.ADBK_EMPL,
+		    ab.ADBK_NM,
+		    ab.ADBK_CMPNY,
+		    c.cmmn_code_name1 AS ADBK_DEPT,
+		    clsf.CLSF_NM AS ADBK_CLSF,
+		    ab.ADBK_EMAIL,
+		    ab.ADBK_TELNO,
+		    ab.ADBK_MEMO
+		FROM
+		    ADDRESSBOOK ab
+		INNER JOIN
+		    COMM_CODE c ON ab.ADBK_DEPT = c.CMMN_CODE
+		INNER JOIN
+		    CLASS_OF_POSITION clsf ON ab.ADBK_CLSF = clsf.CLSF_CODE
+		WHERE
+		    ab.EMPL_NO = #{emplNo} and ab.ADBK_EMPL is NOT NULL
+		ORDER BY
+		    ab.ADBK_NO DESC
+	</select>
+	
+	<select id="totalEmployeeCnt" resultType="int" parameterType="int">
+		SELECT COUNT(*)
+		FROM addressbook
+		WHERE empl_no = #{emplNo} AND adbk_empl IS NOT NULL
+	</select>
+	
+	<select id="selectAddressGrpList" resultType="addressGroupVO">
+		SELECT
+		    adbk_group_no
+		  ,empl_no
+		  ,adbk_nm
+		FROM
+		    address_group
+		where empl_no = #{emplNo}
+		order by adbk_group_no
+	</select>
+	
+	
+	<!--외부인원 인서트 -->
+	<insert id="insertAddress" parameterType="addressBookVO" useGeneratedKeys="true">
+		<selectKey keyProperty="adbkNo" order="BEFORE" resultType="int">
+			SELECT SEQ_ADDRESSBOOK.NEXTVAL FROM DUAL
+		</selectKey> 
+		INSERT INTO ADDRESSBOOK (ADBK_NO, EMPL_NO ,ADBK_NM, ADBK_CMPNY, ADBK_DEPT, ADBK_CLSF, ADBK_EMAIL, ADBK_TELNO, ADBK_MEMO)
+		VALUES (#{adbkNo},#{emplNo}, #{adbkNm}, #{adbkCmpny}, #{adbkDept}, #{adbkClsf}, #{adbkEmail}, #{adbkTelno}, #{adbkMemo})
+	
+	</insert>
+	
+	<update id="updateEmplAddress" parameterType="addressBookVO">
+		UPDATE addressbook
+	    SET
+	        adbk_nm = #{adbkNm},
+	        adbk_email = #{adbkEmail},
+	        adbk_telno = #{adbkTelno},
+	        adbk_memo = #{adbkMemo}
+	    WHERE
+	        adbk_no = #{adbkNo}
+    
+	</update>
+</mapper>

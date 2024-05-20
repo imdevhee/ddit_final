@@ -1,0 +1,90 @@
+package kr.or.ddit.groupware.service.addressbook;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.addressbook.IAddressBookMapper;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.AddressBookVO;
+import kr.or.ddit.groupware.vo.PaginationInfoVO;
+
+/**
+ * 주소록 서비스 구현체
+ * @author <strong>이영주</strong>
+ * @version 1.0
+ * @see AddressBookServiceImpl
+ */
+@Service
+public class AddressBookServiceImpl implements IAddressBookService  {
+	
+	@Inject
+	private IAddressBookMapper mapper;
+	
+//	@Override
+//	public List<AddressBookVO> selectEmployeeAddressList(int emplNo) {
+//		
+//		return mapper.selectEmployeeAddressList(emplNo);
+//	}
+
+//	@Override
+//	public int totalEmployeeCnt(int emplNo) {
+//		return mapper.totalEmployeeCnt2(emplNo);
+//	}
+
+	@Override
+	public Result insertAddress(AddressBookVO addressBookVO) {
+		Result result = null;
+		int status = mapper.insertAddress(addressBookVO);
+		
+		if(status > 0 ) {	// 주소록 인서트 성공
+			result = Result.OK;
+		}
+		else { // 주소록 인서트 실패
+			result = Result.FAILED;
+		}
+		return result;
+	}
+
+	@Override
+	public List<AddressBookVO> selectAddressGrpList(int emplNo) {
+		
+		return mapper.selectAddressGrpList(emplNo);
+	}
+
+	@Override
+	public int updateEmplAddress(AddressBookVO addressBookVO) {
+		
+		
+		int result = mapper.updateEmplAddress(addressBookVO);
+		
+		return result;
+	}
+
+	@Override
+	public int totalEmployeeCnt(PaginationInfoVO<AddressBookVO> pagingVO) {
+		return mapper.totalEmployeeCnt(pagingVO);
+	}
+
+	@Override
+	public List<AddressBookVO> selectEmployeeAddressList(PaginationInfoVO<AddressBookVO> pagingVO) {
+		return mapper.selectEmployeeAddressList(pagingVO);
+	}
+
+	@Override
+	public Integer selectGrpNo(int emplNo) {
+		return mapper.selectGrpNo(emplNo);
+	}
+
+	@Override
+	public List<AddressBookVO> selectPersonalList(int grpNo) {
+		return mapper.selectPersonalList(grpNo);
+	}
+
+	
+
+	
+	
+}

@@ -1,0 +1,41 @@
+$(function() {
+	let driveUpload = $('#drive-upload');
+	let driveUploadModal = $('#drive-upload-modal');
+	let uploadBtn = $('#uploadBtn');
+	let cancelBtn = $('#cancelBtn');
+	let modalExit = $('[data-exit]');
+
+	driveUpload.on('click', function(e) {
+		e.preventDefault();
+		toggleDriveUploadModal();
+	});
+
+	$(document).on('click', function(e) {
+		if ($(e.target).is(driveUploadModal)) {
+			toggleDriveUploadModal();
+		}
+		else if ($(e.target).is(imageModal)) {
+			toggleImageModal();
+		}
+	});
+
+	modalExit.on('click', function(e) {
+		if ($(this).data('exit') == 'drive-upload') {
+			e.preventDefault();
+			toggleDriveUploadModal();
+		}
+	});
+
+	uploadBtn.on('click', function() {
+		toggleDriveUploadModal();
+	});
+
+	cancelBtn.on('click', function() {
+		toggleDriveUploadModal();
+	});
+
+	function toggleDriveUploadModal() {
+		driveUploadModal.toggleClass('show');
+	}
+
+});

@@ -1,0 +1,245 @@
+package kr.or.ddit.groupware.controller.mail;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.groupware.service.employee.IEmployeeService;
+import kr.or.ddit.groupware.service.mail.IMailService;
+import kr.or.ddit.groupware.util.Result;
+import kr.or.ddit.groupware.vo.EmailVO;
+import kr.or.ddit.groupware.vo.PaginationInfoVO;
+
+/**
+ * 메일 컨트롤러
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see MailController
+ */
+@Controller
+@RequestMapping("/mail")
+public class MailController {
+	
+	@Inject
+	private IMailService service;
+	
+	@Inject
+	private IEmployeeService employeeService;
+	
+	@Resource(name = "path")
+	private String resourcePath;
+	
+	/**
+	 * 받은메일함 (selectList)
+	 * @author 최소희
+	 * @param currentPage
+	 * @param searchType
+	 * @param searchWord
+	 * @param model
+	 * @return
+	 */
+	@GetMapping(value="/inbox")
+	public String selectInbox(
+			@RequestParam(name="page", required = false, defaultValue = "1") int currentPage,
+			@RequestParam(required = false, defaultValue = "all") String searchType,
+			@RequestParam(required = false) String searchWord,
+			Model model
+			) {
+		int emplNo = 1;
+		PaginationInfoVO<EmailVO> pagingVO = new PaginationInfoVO<EmailVO>();
+		pagingVO.setEmplNo(emplNo);
+		
+		// 검색이 이뤄지면 아래가 실행됨
+		// 검색이 이뤄졌다는 걸 정확하게 확인하기 위해서는 searchWord가 비어있지 않을 때
+		if(StringUtils.isNotBlank(searchWord)) {
+			pagingVO.setSearchType(searchType);
+			pagingVO.setSearchWord(searchWord);
+			model.addAttribute("searchType", searchType);
+			model.addAttribute("searchWord", searchWord);
+		}
+		
+		// startRow, endRow, startPage, endPage를 설정
+		pagingVO.setCurrentPage(currentPage);
+		
+		// totalRecord라는 총 게시글 수
+		int totalRecord = service.selectEmailCount(pagingVO);
+		pagingVO.setTotalRecord(totalRecord);	// totalPage 설정
+		
+		List<EmailVO> dataList = service.selectEmailList(pagingVO);
+		pagingVO.setDataList(dataList);
+		
+		model.addAttribute("pagingVO",pagingVO);
+		
+		// 안 읽은 메일 개수
+		int noRead = service.selectNoReadCount(emplNo);
+		model.addAttribute("noRead", noRead);
+		
+		return "main/email";
+	}
+
+	/**
+	 * 메일 상세 페이지 (selectOne)
+	 * @author 최소희
+	 * @param model
+	 * @param emailNo
+	 * @return 메일 상세 페이지
+	 */
+	@GetMapping(value = "/detail")
+	public String selectEmail(Model model, int emailNo) {
+		
+		EmailVO emailVO = service.selectEmail(emailNo);
+		setSender(emailVO);
+		Result result = service.readEmail(emailNo);
+		model.addAttribute("email",emailVO);
+		
+		return "main/emailDetail";
+	}
+	
+	// emailVO에 보낸사람 employeeVO를 set
+	public void setSender(EmailVO emailVO) {
+		emailVO.setSenderVO(employeeService.selectEmployee(emailVO.getSenderNo()));
+	}
+	
+	// emailVO에 받는사람 employeeVO를 set
+	public void setReciever(EmailVO emailVO) {
+		emailVO.setRecieverVO(employeeService.selectEmployee(emailVO.getEmailReceptionVO().getRecieverNo()));
+	}
+	
+	/**
+	 * 메일 상세페이지에서 휴지통으로 보내기
+	 * @author 최소희
+	 * @param emailNo
+	 * @param senderNo
+	 * @param ra
+	 * @return 페이지
+	 */
+	@GetMapping("/delete")
+	public String deleteEmail(int emailNo, int senderNo, RedirectAttributes ra, Model model) {
+		int emplNo = 1;
+		String goPage = "";
+		Result result = null;
+		
+		if(emplNo == senderNo) { // 사용자와 발신자가 같을 때 보낸메일 삭제
+			result = service.deleteEmail(emailNo);
+		}else { // 사용자와 발신자가 다를 때 받은메일 삭제
+			result = service.deleteReception(emailNo);
+		}
+		
+		if(result.equals(Result.OK)) {
+			ra.addFlashAttribute("message","메일이 삭제되었습니다!");
+			goPage = "redirect:inbox";
+		}else {
+			model.addAttribute("message","메일 삭제에 실패하였습니다!");
+			goPage = "main/emailDetail?emailNo="+emailNo;
+		}
+		return goPage;
+	}
+	
+	/**
+	 * 메일 상세페이지에서 중요표시 하기
+	 * @author 최소희
+	 * @param emailNo
+	 * @param senderNo
+	 * @param ra
+	 * @return ResponseEntity<String> 성공 여부
+	 */
+	@PostMapping("/important")
+	public ResponseEntity<String> importantEmail(@RequestBody Map<String, Integer> map) {
+		int emplNo = 1;
+		Result result = null;
+		int emailNo = map.get("emailNo");
+		int senderNo = map.get("senderNo");
+				
+		if(emplNo == senderNo) { // 사용자와 발신자가 같을 때 보낸메일 중요표시
+			result = service.importantEmail(emailNo);
+		}else { // 사용자와 발신자가 다를 때 받은메일 중요표시
+			result = service.importantReception(emailNo);
+		}
+		
+		if(result.equals(Result.OK)) {
+			return new ResponseEntity<String> ("SUCCESS", HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String> ("FAILED", HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * 메일 여러개 휴지통으로 보내기
+	 * @author 최소희
+	 * @param map emailNo배열
+	 * @return ResponseEntity<String>
+	 */
+	@PostMapping(value = "/deleteEmailArray", produces = "text/plain;charset=utf-8")
+	public ResponseEntity<String> deleteEmailArray(@RequestBody Map<String, Integer[]> map) {
+		Integer[] emailArray = map.get("emailArray");
+		Result result = null;
+		String message = null;
+		for (int i = 0; i < emailArray.length; i++) {
+			result = service.deleteReception(emailArray[i]);
+		}
+		
+		if(result.equals(Result.OK)) {
+			message = emailArray.length+ "개의 메일이 삭제되었습니다!";
+			return new ResponseEntity<String> (message, HttpStatus.OK);
+		}else {
+			message = "메일 삭제가 실패되었습니다!";
+			return new ResponseEntity<String> (message, HttpStatus.FAILED_DEPENDENCY);
+		}
+	}
+	
+	/**
+	 * 메일 여러개 중요표시하기
+	 * @author 최소희
+	 * @param map emailNo배열
+	 * @return ResponseEntity<String>
+	 */
+	@PostMapping(value = "/importantEmailArray", produces = "text/plain;charset=utf-8")
+	public ResponseEntity<String> importantEmailArray(@RequestBody Map<String, Integer[]> map, Model model) {
+		Integer[] emailArray = map.get("emailArray");
+		Result result = null;
+		String message = null;
+		for (int i = 0; i < emailArray.length; i++) {
+			result = service.importantReception(emailArray[i]);
+		}
+		
+		if(result.equals(Result.OK)) {
+			message = emailArray.length+ "개의 메일이 중요메일함에 추가되었습니다!";
+			return new ResponseEntity<String> (message, HttpStatus.OK);
+		}else {
+			message = "중요메일함 추가가 실패되었습니다!";
+			return new ResponseEntity<String> (message, HttpStatus.FAILED_DEPENDENCY);
+		}
+	}
+	
+	@PostMapping(value = "/readEmailArray", produces = "text/plain;charset=utf-8")
+	public ResponseEntity<String> readEmailArray(@RequestBody Map<String, Integer[]> map, Model model) {
+		Integer[] emailArray = map.get("emailArray");
+		Result result = null;
+		String message = null;
+		for (int i = 0; i < emailArray.length; i++) {
+			result = service.readEmail(emailArray[i]);
+		}
+		
+		if(result.equals(Result.OK)) {
+			message = emailArray.length+ "개의 메일이 읽음처리되었습니다!";
+			return new ResponseEntity<String> (message, HttpStatus.OK);
+		}else {
+			message = "읽음처리가 실패되었습니다!";
+			return new ResponseEntity<String> (message, HttpStatus.FAILED_DEPENDENCY);
+		}
+	}
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.drive.ILogMapper">
+	<insert id="insertLog" parameterType="logVO">
+		insert into log(
+			log_no
+			, empl_no
+			, file_no
+			, log_cn
+			, log_dt
+		)values(
+			seq_log.nextval
+			, #{emplNo}
+			, #{fileNo}
+			, #{logCn}
+			, sysdate
+		)
+	</insert>
+</mapper>

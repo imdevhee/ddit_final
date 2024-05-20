@@ -1,0 +1,110 @@
+package kr.or.ddit.groupware.controller.attendance;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.security.auth.callback.LanguageCallback;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.groupware.service.attendance.IAttendanceService;
+import kr.or.ddit.groupware.vo.CustomUser;
+import kr.or.ddit.groupware.vo.DclzStatusVO;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+/**
+ * 근태 컨트롤러
+ * 
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see AttendanceController
+ */
+@Controller
+@RequestMapping("/attendance")
+public class AttendanceController {
+	
+	@Inject
+	private IAttendanceService service;
+	
+	//해당 월의 시작날짜와 마지막날짜의 리스트
+	public List<LocalDate> getDateList(int year, int month) {
+		//2024-04-01
+		LocalDate currentFirst = LocalDate.of(year, month, 1);
+		//2024-04 마지막날
+		LocalDate currentLast = LocalDate.of(year, month, currentFirst.lengthOfMonth());
+		//4월 1일이 속한 주의 월요일 날짜
+        LocalDate firstMonday = currentFirst.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 해당 주의 월요일
+        //4월의 마지막날이 속한 주의 일요일 날짜
+        LocalDate lastSunday = currentLast.with(DayOfWeek.SUNDAY);
+		
+        List<LocalDate> dateList = new ArrayList<>();
+        while (!firstMonday.isAfter(lastSunday)) {
+        	dateList.add(firstMonday);
+        	firstMonday = firstMonday.plusDays(1);
+        }
+        return dateList;
+    }
+	
+	//해당 월의 1일이 속한 주의 월요일 날짜
+	public LocalDate getFirstMonday(int year, int month) {
+		LocalDate currentFirst = LocalDate.of(year, month, 1);
+		LocalDate firstMonday = currentFirst.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		return firstMonday;
+	}
+	
+	//해당 월의 마지막날짜가 속한 주의 일요일 날짜 + 1
+	public LocalDate getLastSunday(int year, int month) {
+		LocalDate currentFirst = LocalDate.of(year, month, 1);
+		LocalDate currentLast = LocalDate.of(year, month, currentFirst.lengthOfMonth());
+		LocalDate lastSunday = currentLast.with(DayOfWeek.SUNDAY).plusDays(1);
+		return lastSunday;
+	}
+	
+	
+	@PreAuthorize("hasAnyRole('ROLE_MEMBER')")
+	@GetMapping(value="/status")
+	public String attendanceStatus(
+		@RequestParam(name="year", required = false) Integer year,
+		@RequestParam(name="month", required = false) Integer month,
+		Model model
+		) {
+		CustomUser customUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		EmployeeVO userVO = customUser.getEmployeeVO(); 
+		int emplNo = userVO.getEmplNo();
+		
+		DclzStatusVO dclzStatusVO = new DclzStatusVO();
+		dclzStatusVO.setEmplNo(emplNo);
+		
+		if (year == null || year == 0) {
+            year = LocalDate.now().getYear();
+        }
+        if (month == null || month == 0) {
+            month = LocalDate.now().getMonthValue();
+        }
+        
+		dclzStatusVO.setFirstMonday(getFirstMonday(year, month));
+		dclzStatusVO.setLastSunday(getLastSunday(year, month));
+		
+		List<LocalDate> dateList = getDateList(year, month);
+		List<DclzStatusVO> dclzStatusList = service.selectDclzList(dclzStatusVO);
+		
+		model.addAttribute("dclzStatusList", dclzStatusList);
+		model.addAttribute("dateList", dateList);
+		model.addAttribute("year", year);
+		model.addAttribute("month", String.format("%02d", month));
+		
+		return "attendance/status";
+	}
+}

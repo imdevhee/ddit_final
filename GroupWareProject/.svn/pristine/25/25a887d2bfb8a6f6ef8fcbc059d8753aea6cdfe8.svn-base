@@ -1,0 +1,22 @@
+package kr.or.ddit.groupware.mapper.memo;
+
+import java.util.List;
+
+import kr.or.ddit.groupware.vo.MemoVO;
+
+/**
+ * 메모 SQL Mapper
+ * @author 민경선
+ * @version 1.0
+ * @see IMemoMapper
+ */
+public interface IMemoMapper {
+
+	public int addMemo(MemoVO memoVO);
+
+	public List<MemoVO> getNotesList(int emplNo);
+
+	
+	
+
+}

@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.schedule;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 일정 컨트롤러
+ * @author <strong>권예은</strong>
+ * @version 1.0
+ * @see ScheduleController
+ */
+@Controller
+@RequestMapping("/schedule")
+public class ScheduleController {
+
+}

@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.notification;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 알림 컨트롤러
+ * @author <strong>이명문</strong>
+ * @version 1.0
+ * @see NotificationController
+ */
+@Controller
+@RequestMapping("/noti")
+public class NotificationController {
+
+}

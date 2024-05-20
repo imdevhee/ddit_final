@@ -1,0 +1,16 @@
+package kr.or.ddit.groupware.controller.mail;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 메일 컨트롤러
+ * @author <strong>최소희</strong>
+ * @version 1.0
+ * @see MailController
+ */
+@Controller
+@RequestMapping("/mail")
+public class MailController {
+
+}

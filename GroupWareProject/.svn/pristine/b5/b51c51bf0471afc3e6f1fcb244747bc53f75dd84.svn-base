@@ -1,0 +1,44 @@
+package kr.or.ddit.groupware.vo;
+
+import java.time.LocalDate;
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class DclzStatusVO {
+	private int dclzNo;
+	private int emplNo;
+	private Date attendDt;
+	private Date lvffcDt;
+
+	private int dclzPartclrNo;
+	private Date beginDt;
+	private Date endDt;
+	private String dclzTypeCode;
+	private String dclzNm;
+
+	private LocalDate firstMonday;
+	private LocalDate lastSunday;
+	private Date date;
+	private String defaultTime;
+	private String overTime;
+	private String nightTime;
+
+//	public String getDclzNm() {
+//		if(this.dclzTypeCode != null && this.dclzTypeCode.equals("")) {
+//			switch (this.dclzTypeCode) {
+//			case "D101":
+//				return "외근";
+//			case "D102":
+//				return "출장";
+//			case "D103":
+//				return "휴가";
+//			default:
+//				return null;
+//			}
+//		}
+//		return null;
+//	}
+
+}

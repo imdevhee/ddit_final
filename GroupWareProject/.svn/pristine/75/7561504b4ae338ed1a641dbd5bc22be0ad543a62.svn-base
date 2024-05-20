@@ -1,0 +1,34 @@
+package kr.or.ddit.groupware.security;
+
+import javax.inject.Inject;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import kr.or.ddit.groupware.mapper.conn.ILoginMapper;
+import kr.or.ddit.groupware.vo.CustomUser;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+public class CustomUserDetailsService implements UserDetailsService {
+	
+	@Inject
+	private ILoginMapper loginMapper;
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
+		
+		EmployeeVO emplyoee;
+		
+		try {
+			emplyoee = loginMapper.readByEmployeeId(username);
+			return emplyoee == null ? null : new CustomUser(emplyoee);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+}

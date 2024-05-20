@@ -1,0 +1,106 @@
+$(function () {
+
+	const taskStatusChart = document.getElementById("task-status-chart");
+
+	const data = {
+		type: 'doughnut',
+		data: {
+			labels: ["대기", "진행중", "완료"],
+			datasets: [
+				{
+					backgroundColor: [
+						'rgb(255, 99, 132)',
+						'rgb(54, 162, 235)',
+						'rgb(255, 205, 86)'
+					],
+					data: [13, 16, 17]
+				}
+			]
+		},
+		options: {
+			responsive: false,
+			legend: {
+				display: false,
+				position: 'bottom',
+			}
+		}
+	};
+
+	new Chart(taskStatusChart, data);
+
+	
+	var salary = {
+		series: [
+		  {
+			name: "Employee Salary",
+			data: [20, 15, 30, 25, 10, 15],
+		  },
+		],
+	
+		chart: {
+		  toolbar: {
+			show: false,
+		  },
+		  height: 260,
+		  type: "bar",
+		  fontFamily: "inherit",
+		  foreColor: "#adb0bb",
+		},
+		colors: [
+		  "var(--bs-primary-bg-subtle)",
+		  "var(--bs-primary-bg-subtle)",
+		  "var(--bs-primary)",
+		  "var(--bs-primary-bg-subtle)",
+		  "var(--bs-primary-bg-subtle)",
+		  "var(--bs-primary-bg-subtle)",
+		],
+		plotOptions: {
+		  bar: {
+			borderRadius: 4,
+			columnWidth: "45%",
+			distributed: true,
+			endingShape: "rounded",
+		  },
+		},
+	
+		dataLabels: {
+		  enabled: false,
+		},
+		legend: {
+		  show: false,
+		},
+		grid: {
+		  yaxis: {
+			lines: {
+			  show: false,
+			},
+		  },
+		  xaxis: {
+			lines: {
+			  show: false,
+			},
+		  },
+		},
+		xaxis: {
+		  categories: [["Apr"], ["May"], ["June"], ["July"], ["Aug"], ["Sept"]],
+		  axisBorder: {
+			show: false,
+		  },
+		  axisTicks: {
+			show: false,
+		  },
+		},
+		yaxis: {
+		  labels: {
+			show: false,
+		  },
+		},
+		tooltip: {
+		  theme: "dark",
+		},
+	  };
+	
+	  var chart = new ApexCharts(document.querySelector("#salary"), salary);
+	  chart.render();
+
+});

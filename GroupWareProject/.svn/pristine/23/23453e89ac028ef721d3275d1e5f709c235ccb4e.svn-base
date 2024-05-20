@@ -1,0 +1,135 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<div class="card">
+    <div>
+        <div class="row gx-0">
+            <div class="col-lg-12">
+                <div class="p-4 calender-sidebar app-calendar">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 일정 등록창 Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">일정 추가하기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+                <label for="title">일정이름:</label>
+                <input type="text" id="title"/>
+                <br />
+	            <label for="start">시작시간:</label> 
+	           <input type="datetime-local" id="start" /> 
+                <br />
+                <label for="end">종료시간:</label> 
+               	<input type="datetime-local" id="end" />
+				<br />
+<!--                 <label for="color">배경색상:</label> -->
+<!--                 <select id="color"> -->
+<!--                     <option value="red">빨강색</option> -->
+<!--                     <option value="orange">주황색</option> -->
+<!--                     <option value="yellow">노랑색</option> -->
+<!--                     <option value="green">초록색</option> -->
+<!--                     <option value="blue">파랑색</option> -->
+<!--                     <option value="indigo">남색</option> -->
+<!--                     <option value="purple">보라색</option> -->
+<!--                 </select> -->
+            </div>
+           
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="saveChanges">추가</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal END -->
+<%-- <script src="${pageContext.request.contextPath }/resources/project/js/datetimepicker/bootstrap-material-datetimepicker.js"></script> --%>
+<script src="${pageContext.request.contextPath }/resources/project/js/sweetalert_custom.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/source/index.global.min.js"></script>
+
+
+<!-- jqeruy 로드 후 datepicker를 로드-->
+<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"/></script>
+<!--한글-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ko.min.js"/></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialView: 'timeGridWeek',
+            slotMinTime: '09:00:00',
+            slotMaxTime: '22:00:00',
+            selectable: true,
+            select: function(arg) {
+                // 선택한 시간대의 시작 시간과 종료 시간을 가져옴
+                // 현재 시각 가져오기
+			   var now = new Date();
+			   
+			   // 선택한 시작 시간 가져오기
+			   var start = arg.start;
+			
+			   // 현재 시각과 선택한 시작 시간을 비교하여 이전인 경우 알림 표시
+			   if (start < now) {
+			       alert("현재 시각 이후의 일정만 선택할 수 있습니다.");
+			       return;
+			   }
+			               
+                var start = arg.start;
+                var end = arg.end;
+                
+           
+              // 시작 시간과 종료 시간을 모달 창에 설정
+              document.getElementById('start').value = start.toISOString().slice(0, 16);
+              document.getElementById('end').value = end.toISOString().slice(0, 16);
+                
+            // 모달 창 열기
+        	        
+	        $('#exampleModal').modal('show');
+	            }
+	        });
+	        calendar.render();
+        
+        
+    });
+
+    document.getElementById('saveChanges').addEventListener('click', function() {
+        // 저장 버튼 클릭 시 실행되는 코드
+        var title = document.getElementById('title').value;
+        var start = document.getElementById('start').value;
+        var end = document.getElementById('end').value;
+        var color = document.getElementById('color').value;
+
+        // 입력된 일정 정보를 이용하여 FullCalendar에 이벤트 추가
+        var eventData = {
+            title: title,
+            start: start,
+            end: end,
+            color: color
+        };
+        calendar.addEvent(eventData);
+
+        // 모달 창 닫기
+        $('#exampleModal').modal('hide');
+
+        // 입력 폼 초기화
+        document.getElementById('title').value = '';
+        document.getElementById('start').value = '';
+        document.getElementById('end').value = '';
+        document.getElementById('color').value = '';
+    });
+</script>

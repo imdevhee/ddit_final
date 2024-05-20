@@ -1,0 +1,23 @@
+package kr.or.ddit.groupware.vo;
+
+import java.time.LocalDate;
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class DclzStatusVO {
+	private int dclzNo;
+	private int emplNo;
+	private Date attendDt;
+	private Date lvffcDt;
+	
+	private LocalDate firstMonday;
+	private LocalDate lastSunday;
+	private Date date;
+	private String defaultTime;
+	private String overTime;
+	private String nightTime;
+	
+	
+}

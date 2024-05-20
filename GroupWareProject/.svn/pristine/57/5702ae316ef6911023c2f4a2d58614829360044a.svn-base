@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.mapper.addressbook;
+
+/**
+ * 주소록 SQL Mapper
+ * @author 이영주
+ * @version 1.0
+ * @see IAddressBookMapper
+ */
+public interface IAddressBookMapper {
+
+}

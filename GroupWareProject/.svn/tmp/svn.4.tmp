@@ -1,0 +1,21 @@
+package kr.or.ddit.groupware.service.employee;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.groupware.mapper.employee.IEmployeeMapper;
+import kr.or.ddit.groupware.vo.EmployeeVO;
+
+@Service
+public class EmployeeServiceImpl implements IEmplyoeeService {
+
+	@Inject
+	private IEmployeeMapper mapper;
+	
+	@Override
+	public EmployeeVO profileForm(int empNo) {
+		return mapper.profileForm(empNo);
+	}
+
+}

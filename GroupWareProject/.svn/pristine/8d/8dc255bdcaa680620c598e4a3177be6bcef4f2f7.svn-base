@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.groupware.mapper.project.ITasktMapper">
+	
+	<select id="selectOngoingTaskListByEmplNo" parameterType="int" resultType="taskVO">
+		select 
+		    task_no,
+		    upper_task_no,
+		    t.prjct_no,
+		    p.prjct_nm,
+		    task_nm,
+		    task_cn,
+		    task_progrs,
+		    task_imprtnc,
+		    task_priort,
+		    task_begin_dt,
+		    task_end_dt,
+		    atch_file_group_no,
+		    pp.prjct_prtcpnt_color_code prjct_color
+		from 
+		    task t, project p, project_participant pp
+		where
+		    p.prjct_no = t.prjct_no
+		    and p.prjct_code = 'P102'
+		    and p.prjct_no = pp.prjct_no
+		    and pp.empl_no = #{emplNo}
+		    and t.empl_no = #{emplNo}
+	</select>
+	
+</mapper>

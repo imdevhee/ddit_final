@@ -1,0 +1,14 @@
+package kr.or.ddit.groupware.mapper.schedule;
+
+import kr.or.ddit.groupware.service.schedule.IScheduleService;
+import kr.or.ddit.groupware.service.schedule.ScheduleServiceImpl;
+
+/**
+ * 일정 관리 SQL Mapper
+ * @author 권예은
+ * @version 1.0
+ * @see SchduleController
+ */
+public interface IScheduleMapper {
+
+}

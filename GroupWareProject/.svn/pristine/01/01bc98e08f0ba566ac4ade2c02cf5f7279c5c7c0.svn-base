@@ -1,0 +1,11 @@
+package kr.or.ddit.groupware.mapper.mail;
+
+/**
+ * 메일 SQL Mapper
+ * @author 최소희
+ * @version 1.0
+ * @see IMailMapper
+ */
+public interface IMailMapper {
+
+}

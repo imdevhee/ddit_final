@@ -1,0 +1,116 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="${pageContext.request.contextPath }/resources/project/css/source/tui-pagination.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath }/resources/project/css/source/tui-grid.min.css">
+
+<div class="card position-relative overflow-hidden rounded-0">
+	<div class="shop-part d-flex w-100">
+		<div class="flex-fill">
+			<div class="px-9 pt-4 pb-3">
+				<a href="/admin/documents/stat">
+					<h3 class="mb-4" style="font-weight: 600; margin-left: 10px;">
+						<i class="fa-sharp fa-regular fa-file-lines fa-fw"></i> 프로젝트 통계
+					</h3>
+				</a>
+			</div>
+			<div class="container-fluid positon-relative flex-fill mt-4">
+				<div class="card bg-white">
+					<div class="card-body p-5">
+						<div class="w-100">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="d-flex align-items-start gap-6 mb-2">
+										<h5 class="fs-5 mb-0 d-none fw-semibold d-lg-block flex-grow-1" data-title="">전체 프로젝트</h5>
+									</div>
+									<div id="grid"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="${pageContext.request.contextPath }/resources/project/js/source/tui-code-snippet.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/source/tui-pagination.js"></script>
+<script src="${pageContext.request.contextPath }/resources/project/js/source/tui-grid.min.js"></script>
+<script>
+let data = JSON.parse('${projectList}');
+gridInit(data);
+
+function gridInit(data) {
+	$('#grid').html('');
+	
+	tui.Grid.applyTheme('clean', {
+		cell: {
+		   normal: {
+		     border: '#fff',
+		     showVerticalBorder: false,
+		     showHorizontalBorder: false,
+		   },
+		   header: {
+		     border: '#ddd',
+		     showVerticalBorder: false,
+		     showHorizontalBorder: false,
+		   },
+		   rowHeader: {
+				border: '#fff',
+			     showVerticalBorder: false,
+			     showHorizontalBorder: false,
+		   }
+		},
+	});
+	tui.Grid.setLanguage('ko', {
+		display: {
+            noData: '검색 결과가 존재하지 않습니다.',
+            loadingData: '로딩중입니다...',
+		}
+	});
+	
+	grid = new tui.Grid({
+	    el: document.getElementById('grid'),
+	    data: data,
+	    scrollX: false,
+	    scrollY: false,
+	    header: {
+	        height: 30, 
+	    },
+	    columns: 
+	    [
+	      {
+	        header: '프로젝트 명',
+	        name: 'prjctNm',
+	        width: '150',
+	        resizable: true,
+	      },
+	      {
+	        header: '프로젝트내용',
+	        width: '150',
+	        name: 'prjctCn',
+	        resizable: true,
+	      },
+	      {
+	        header: '시작일자',
+	        width: '100',
+	        name: 'prjctBeginDate',
+	        resizable: true,
+	      },
+	      {
+	        header: '종료일자',
+	        width: '60',
+	        name: 'prjctEndDate',
+	        resizable: true,
+	      }
+	    ],
+	    pageOptions: {
+	      useClient: true,
+	      perPage: 5,
+	      visiblePages: 5,
+	      centerAlign: false
+	    },
+	    bodyHeight: 'fitToParent',
+	    rowHeight: 30
+	});
+}
+</script>
